@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaAngleDown, FaAngleRight } from "react-icons/fa";
 import TaskItem from "./TaskItem";
 import TaskForm from "./TaskForm";
 import { getTasks, createTask, updateTask, deleteTask } from "../services/api";
@@ -12,6 +12,7 @@ const TaskList = () => {
   const [currentTask, setCurrentTask] = useState(null);
   const [sortBy, setSortBy] = useState("created_at");
   const [showSortOptions, setShowSortOptions] = useState(false);
+  const [showCompletedTasks, setShowCompletedTasks] = useState(true);
 
   const loadTasks = async () => {
     try {
@@ -91,7 +92,12 @@ const TaskList = () => {
     setShowSortOptions(false);
   };
 
-  const sortedTasks = [...tasks].sort((a, b) => {
+  // Filtrar tarefas ativas e concluídas
+  const activeTasks = tasks.filter((task) => !task.completed);
+  const completedTasks = tasks.filter((task) => task.completed);
+
+  // Ordenar tarefas ativas
+  const sortedActiveTasks = [...activeTasks].sort((a, b) => {
     if (sortBy === "title") {
       return a.title.localeCompare(b.title);
     } else if (sortBy === "due_date") {
@@ -103,6 +109,11 @@ const TaskList = () => {
       // created_at (padrão)
       return new Date(b.created_at) - new Date(a.created_at);
     }
+  });
+
+  // Ordenar tarefas concluídas (sempre pela data de conclusão, mais recentes primeiro)
+  const sortedCompletedTasks = [...completedTasks].sort((a, b) => {
+    return new Date(b.created_at) - new Date(a.created_at);
   });
 
   return (
@@ -195,15 +206,60 @@ const TaskList = () => {
           </div>
         ) : (
           <div>
-            {sortedTasks.map((task) => (
-              <TaskItem
-                key={task.id}
-                task={task}
-                onEdit={handleEditTask}
-                onDelete={handleDeleteTask}
-                onToggleComplete={handleToggleComplete}
-              />
-            ))}
+            {/* Tarefas ativas */}
+            <div className="mb-6">
+              <h2 className="text-lg font-medium mb-3 text-gray-800">
+                Tarefas Pendentes
+              </h2>
+              {sortedActiveTasks.length === 0 ? (
+                <div className="text-center py-4 text-gray-500">
+                  Você não tem tarefas pendentes. Bom trabalho!
+                </div>
+              ) : (
+                sortedActiveTasks.map((task) => (
+                  <TaskItem
+                    key={task.id}
+                    task={task}
+                    onEdit={handleEditTask}
+                    onDelete={handleDeleteTask}
+                    onToggleComplete={handleToggleComplete}
+                  />
+                ))
+              )}
+            </div>
+
+            {/* Tarefas concluídas - só mostra se houver tarefas concluídas */}
+            {sortedCompletedTasks.length > 0 && (
+              <div className="mt-8 border-t pt-4">
+                <button
+                  onClick={() => setShowCompletedTasks(!showCompletedTasks)}
+                  className="flex items-center text-gray-600 hover:text-gray-900 mb-3"
+                >
+                  {showCompletedTasks ? (
+                    <FaAngleDown className="mr-2" />
+                  ) : (
+                    <FaAngleRight className="mr-2" />
+                  )}
+                  <h2 className="text-lg font-medium">
+                    Tarefas Concluídas ({sortedCompletedTasks.length})
+                  </h2>
+                </button>
+
+                {showCompletedTasks && (
+                  <div className="mt-2">
+                    {sortedCompletedTasks.map((task) => (
+                      <TaskItem
+                        key={task.id}
+                        task={task}
+                        onEdit={handleEditTask}
+                        onDelete={handleDeleteTask}
+                        onToggleComplete={handleToggleComplete}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
