@@ -60,7 +60,12 @@ const TaskList = ({ id, onTasksUpdate }) => {
 
   const handleUpdateTask = async (taskData) => {
     try {
-      const updatedTask = await updateTask(currentTask.id, taskData);
+      // Preserve the existing completed status since we removed the checkbox
+      const updatedTaskData = {
+        ...taskData,
+        completed: currentTask.completed, // Maintain the current completed state
+      };
+      const updatedTask = await updateTask(currentTask.id, updatedTaskData);
       const updatedTasks = tasks.map((task) =>
         task.id === updatedTask.id ? updatedTask : task
       );

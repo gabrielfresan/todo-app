@@ -6,20 +6,17 @@ const TaskForm = ({ task, onSubmit, onCancel }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState(null);
-  const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
     if (task) {
       setTitle(task.title || "");
       setDescription(task.description || "");
       setDueDate(task.due_date ? new Date(task.due_date) : null);
-      setCompleted(task.completed || false);
     } else {
       // Reset form when creating a new task
       setTitle("");
       setDescription("");
       setDueDate(null);
-      setCompleted(false);
     }
   }, [task]);
 
@@ -30,7 +27,6 @@ const TaskForm = ({ task, onSubmit, onCancel }) => {
       title,
       description,
       due_date: dueDate ? dueDate.toISOString() : null,
-      completed,
     };
 
     onSubmit(taskData);
@@ -85,20 +81,7 @@ const TaskForm = ({ task, onSubmit, onCancel }) => {
         </div>
       </div>
 
-      {/* Mostra a opção "Concluída" quando estiver editando uma tarefa existente */}
-      {task && (
-        <div>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={completed}
-              onChange={(e) => setCompleted(e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="ml-2 text-sm text-gray-700">Concluída</span>
-          </label>
-        </div>
-      )}
+      {/* Removido o checkbox "Concluída" conforme solicitado */}
 
       <div className="flex justify-end space-x-2 mt-6">
         <button
