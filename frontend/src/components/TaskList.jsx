@@ -7,11 +7,18 @@ import {
   FaCalendarWeek,
   FaCalendarAlt,
   FaRecycle,
+  FaTrashAlt,
 } from "react-icons/fa";
 import TaskItem from "./TaskItem";
 import TaskForm from "./TaskForm";
 import Modal from "./Modal";
-import { getTasks, createTask, updateTask, deleteTask } from "../services/api";
+import {
+  getTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+  deleteAllCompletedTasks,
+} from "../services/api";
 import { isToday, isTomorrow, parseISO } from "date-fns";
 
 const TaskList = ({ id, onTasksUpdate }) => {
@@ -24,6 +31,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
   const [showSortOptions, setShowSortOptions] = useState(false);
   const [showCompletedTasks, setShowCompletedTasks] = useState(true);
   const [activeFilter, setActiveFilter] = useState("all"); // 'all', 'today', 'tomorrow', 'future', 'recurring'
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const loadTasks = useCallback(async () => {
     try {
@@ -109,6 +117,29 @@ const TaskList = ({ id, onTasksUpdate }) => {
         setError("Erro ao excluir tarefa.");
         console.error(err);
       }
+    }
+  };
+
+  const handleDeleteAllCompletedTasks = async () => {
+    try {
+      const result = await deleteAllCompletedTasks();
+      console.log(`Deleted ${result.deleted_count} completed tasks`);
+
+      // Atualizar o estado removendo as tarefas concluídas
+      const updatedTasks = tasks.filter((task) => !task.completed);
+      setTasks(updatedTasks);
+
+      // Propagar tarefas atualizadas
+      if (onTasksUpdate) {
+        onTasksUpdate(updatedTasks);
+      }
+
+      // Fechar o modal de confirmação
+      setIsConfirmModalOpen(false);
+    } catch (err) {
+      setError("Erro ao excluir tarefas concluídas.");
+      console.error(err);
+      setIsConfirmModalOpen(false);
     }
   };
 
@@ -263,6 +294,34 @@ const TaskList = ({ id, onTasksUpdate }) => {
             setCurrentTask(null);
           }}
         />
+      </Modal>
+
+      {/* Confirmation modal for deleting all completed tasks */}
+      <Modal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        title="Excluir Todas as Tarefas Concluídas"
+      >
+        <div className="p-4">
+          <p className="mb-4">
+            Tem certeza que deseja excluir todas as tarefas concluídas? Esta
+            ação não pode ser desfeita.
+          </p>
+          <div className="flex justify-end space-x-2">
+            <button
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+              onClick={() => setIsConfirmModalOpen(false)}
+            >
+              Cancelar
+            </button>
+            <button
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              onClick={handleDeleteAllCompletedTasks}
+            >
+              Excluir
+            </button>
+          </div>
+        </div>
       </Modal>
 
       <div className="bg-white shadow-md rounded-lg p-6">
@@ -457,19 +516,32 @@ const TaskList = ({ id, onTasksUpdate }) => {
             {/* Tarefas concluídas - só mostra se houver tarefas concluídas */}
             {sortedCompletedTasks.length > 0 && activeFilter === "all" && (
               <div className="mt-8 border-t pt-4">
-                <button
-                  onClick={() => setShowCompletedTasks(!showCompletedTasks)}
-                  className="flex items-center text-gray-600 hover:text-gray-900 mb-3"
-                >
-                  {showCompletedTasks ? (
-                    <FaAngleDown className="mr-2" />
-                  ) : (
-                    <FaAngleRight className="mr-2" />
+                <div className="flex justify-between items-center mb-3">
+                  <button
+                    onClick={() => setShowCompletedTasks(!showCompletedTasks)}
+                    className="flex items-center text-gray-600 hover:text-gray-900"
+                  >
+                    {showCompletedTasks ? (
+                      <FaAngleDown className="mr-2" />
+                    ) : (
+                      <FaAngleRight className="mr-2" />
+                    )}
+                    <h2 className="text-lg font-medium">
+                      Tarefas Concluídas ({sortedCompletedTasks.length})
+                    </h2>
+                  </button>
+
+                  {/* New button to delete all completed tasks */}
+                  {showCompletedTasks && sortedCompletedTasks.length > 0 && (
+                    <button
+                      onClick={() => setIsConfirmModalOpen(true)}
+                      className="flex items-center text-red-500 hover:text-red-700 text-sm"
+                    >
+                      <FaTrashAlt className="mr-1" />
+                      Excluir todas concluídas
+                    </button>
                   )}
-                  <h2 className="text-lg font-medium">
-                    Tarefas Concluídas ({sortedCompletedTasks.length})
-                  </h2>
-                </button>
+                </div>
 
                 {showCompletedTasks && (
                   <div className="mt-2">

@@ -29,6 +29,11 @@ export const deleteTask = async (id) => {
   return true;
 };
 
+export const deleteAllCompletedTasks = async () => {
+  const response = await api.delete("/tasks/completed");
+  return response.data;
+};
+
 // Função auxiliar para formatação de string de recorrência
 export const getRecurrenceDescription = (recurrenceType) => {
   switch (recurrenceType) {

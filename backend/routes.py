@@ -80,6 +80,22 @@ def delete_task(task_id):
     
     return '', 204
 
+@api.route('/tasks/completed', methods=['DELETE'])
+def delete_completed_tasks():
+    """Delete all completed tasks."""
+    # Find all completed tasks
+    completed_tasks = Task.query.filter_by(completed=True).all()
+    
+    # Delete each task
+    for task in completed_tasks:
+        db.session.delete(task)
+    
+    # Commit changes
+    db.session.commit()
+    
+    # Return success response with count of deleted tasks
+    return jsonify({"deleted_count": len(completed_tasks)}), 200
+
 def create_next_recurring_task(task):
     """
     Cria a próxima tarefa recorrente baseada no tipo de recorrência.
