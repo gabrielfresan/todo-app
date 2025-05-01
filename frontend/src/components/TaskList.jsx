@@ -9,7 +9,6 @@ const TaskList = ({ id, onTasksUpdate }) => {
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [sortBy, setSortBy] = useState("created_at");
@@ -51,7 +50,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
         onTasksUpdate(updatedTasks);
       }
 
-      setIsFormOpen(false);
+      setIsModalOpen(false);
     } catch (err) {
       setError("Erro ao criar tarefa.");
       console.error(err);
@@ -128,6 +127,11 @@ const TaskList = ({ id, onTasksUpdate }) => {
     setIsModalOpen(true);
   };
 
+  const handleNewTask = () => {
+    setCurrentTask(null);
+    setIsModalOpen(true);
+  };
+
   const handleSort = (field) => {
     setSortBy(field);
     setShowSortOptions(false);
@@ -163,10 +167,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
         <h1 className="text-2xl font-bold">Minhas Tarefas</h1>
 
         <button
-          onClick={() => {
-            setCurrentTask(null);
-            setIsFormOpen(true);
-          }}
+          onClick={handleNewTask}
           className="flex items-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
         >
           <FaPlus className="mr-1" /> Nova Tarefa
@@ -179,36 +180,20 @@ const TaskList = ({ id, onTasksUpdate }) => {
         </div>
       )}
 
-      {/* Form for new tasks */}
-      {isFormOpen && (
-        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Nova Tarefa</h2>
-          <TaskForm
-            task={null}
-            onSubmit={handleCreateTask}
-            onCancel={() => {
-              setIsFormOpen(false);
-            }}
-          />
-        </div>
-      )}
-
-      {/* Modal for editing tasks */}
+      {/* Modal for both creating and editing tasks */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Editar Tarefa"
+        title={currentTask ? "Editar Tarefa" : "Nova Tarefa"}
       >
-        {currentTask && (
-          <TaskForm
-            task={currentTask}
-            onSubmit={handleUpdateTask}
-            onCancel={() => {
-              setIsModalOpen(false);
-              setCurrentTask(null);
-            }}
-          />
-        )}
+        <TaskForm
+          task={currentTask}
+          onSubmit={currentTask ? handleUpdateTask : handleCreateTask}
+          onCancel={() => {
+            setIsModalOpen(false);
+            setCurrentTask(null);
+          }}
+        />
       </Modal>
 
       <div className="bg-white shadow-md rounded-lg p-6">
