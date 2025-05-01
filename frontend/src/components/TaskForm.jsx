@@ -7,13 +7,23 @@ const TaskForm = ({ task, onSubmit, onCancel }) => {
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState(null);
 
+  // Definir o horário mínimo como o atual
+  const now = new Date();
+
   useEffect(() => {
     if (task) {
       setTitle(task.title || "");
       setDescription(task.description || "");
-      setDueDate(task.due_date ? new Date(task.due_date) : null);
+
+      // Se estiver editando uma tarefa com data de vencimento, usá-la, caso contrário, null
+      if (task.due_date) {
+        const taskDueDate = new Date(task.due_date);
+        setDueDate(taskDueDate);
+      } else {
+        setDueDate(null);
+      }
     } else {
-      // Reset form when creating a new task
+      // Resetar formulário ao criar uma nova tarefa
       setTitle("");
       setDescription("");
       setDueDate(null);
@@ -30,6 +40,16 @@ const TaskForm = ({ task, onSubmit, onCancel }) => {
     };
 
     onSubmit(taskData);
+  };
+
+  // Função simples para verificar se uma data é hoje
+  const isToday = (date) => {
+    const today = new Date();
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
   };
 
   return (
@@ -77,11 +97,34 @@ const TaskForm = ({ task, onSubmit, onCancel }) => {
             placeholderText="Selecione uma data e hora"
             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border"
             wrapperClassName="w-full"
+            minDate={now}
+            filterTime={(time) => {
+              // Se não tiver data selecionada ou se não for hoje, aceitar qualquer horário
+              if (!dueDate || !isToday(dueDate)) {
+                return true;
+              }
+
+              // Se for hoje, verificar se o horário é futuro
+              const currentHour = now.getHours();
+              const currentMinute = now.getMinutes();
+              const timeHour = time.getHours();
+              const timeMinute = time.getMinutes();
+
+              // Verificar se o horário é futuro (maior que o atual)
+              if (timeHour > currentHour) {
+                return true;
+              } else if (
+                timeHour === currentHour &&
+                timeMinute >= currentMinute
+              ) {
+                return true;
+              }
+
+              return false;
+            }}
           />
         </div>
       </div>
-
-      {/* Removido o checkbox "Concluída" conforme solicitado */}
 
       <div className="flex justify-end space-x-2 mt-6">
         <button
