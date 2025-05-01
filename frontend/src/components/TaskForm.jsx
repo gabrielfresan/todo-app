@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { FaRecycle } from "react-icons/fa";
 
 const TaskForm = ({ task, onSubmit, onCancel }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState(null);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurrenceType, setRecurrenceType] = useState("daily");
 
   // Definir o horário mínimo como o atual
   const now = new Date();
@@ -22,11 +25,17 @@ const TaskForm = ({ task, onSubmit, onCancel }) => {
       } else {
         setDueDate(null);
       }
+
+      // Configurar campos de recorrência se existirem
+      setIsRecurring(task.is_recurring || false);
+      setRecurrenceType(task.recurrence_type || "daily");
     } else {
       // Resetar formulário ao criar uma nova tarefa
       setTitle("");
       setDescription("");
       setDueDate(null);
+      setIsRecurring(false);
+      setRecurrenceType("daily");
     }
   }, [task]);
 
@@ -37,6 +46,8 @@ const TaskForm = ({ task, onSubmit, onCancel }) => {
       title,
       description,
       due_date: dueDate ? dueDate.toISOString() : null,
+      is_recurring: isRecurring,
+      recurrence_type: isRecurring ? recurrenceType : null,
     };
 
     onSubmit(taskData);
@@ -124,6 +135,83 @@ const TaskForm = ({ task, onSubmit, onCancel }) => {
             }}
           />
         </div>
+      </div>
+
+      {/* Seção de Recorrência */}
+      <div className="mb-4">
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="is-recurring"
+            checked={isRecurring}
+            onChange={(e) => setIsRecurring(e.target.checked)}
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          />
+          <label
+            htmlFor="is-recurring"
+            className="ml-2 block text-sm font-medium text-gray-700 flex items-center"
+          >
+            Tarefa Recorrente <FaRecycle className="ml-1 text-green-500" />
+          </label>
+        </div>
+
+        {isRecurring && dueDate && (
+          <div className="mt-3 pl-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Repetir:
+            </label>
+            <div className="flex space-x-4">
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  value="daily"
+                  checked={recurrenceType === "daily"}
+                  onChange={(e) => setRecurrenceType(e.target.value)}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                />
+                <span className="ml-2 text-sm text-gray-700">Diariamente</span>
+              </label>
+
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  value="weekly"
+                  checked={recurrenceType === "weekly"}
+                  onChange={(e) => setRecurrenceType(e.target.value)}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                />
+                <span className="ml-2 text-sm text-gray-700">Semanalmente</span>
+              </label>
+
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  value="monthly"
+                  checked={recurrenceType === "monthly"}
+                  onChange={(e) => setRecurrenceType(e.target.value)}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                />
+                <span className="ml-2 text-sm text-gray-700">Mensalmente</span>
+              </label>
+            </div>
+
+            <p className="mt-2 text-xs text-gray-500 italic">
+              {recurrenceType === "daily" &&
+                "A tarefa será recriada todo dia quando concluída."}
+              {recurrenceType === "weekly" &&
+                "A tarefa será recriada no mesmo dia da semana quando concluída."}
+              {recurrenceType === "monthly" &&
+                "A tarefa será recriada no mesmo dia do mês quando concluída."}
+            </p>
+          </div>
+        )}
+
+        {isRecurring && !dueDate && (
+          <p className="mt-2 text-xs text-red-500">
+            Por favor, defina uma data de conclusão para habilitar a
+            recorrência.
+          </p>
+        )}
       </div>
 
       <div className="flex justify-end space-x-2 mt-6">

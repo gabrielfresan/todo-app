@@ -1,8 +1,28 @@
-import { FaTrash, FaCheck, FaRegCircle, FaCalendarAlt } from "react-icons/fa";
+import {
+  FaTrash,
+  FaCheck,
+  FaRegCircle,
+  FaCalendarAlt,
+  FaRecycle,
+} from "react-icons/fa";
 import TaskNotificationBadge from "./TaskNotificationBadge";
 import { isPastDate, getRelativeDateDescription } from "../utils/dateUtils";
 
 const TaskItem = ({ task, onEdit, onDelete, onToggleComplete }) => {
+  // Função para obter a descrição da recorrência
+  const getRecurrenceDescription = (type) => {
+    switch (type) {
+      case "daily":
+        return "Diariamente";
+      case "weekly":
+        return "Semanalmente";
+      case "monthly":
+        return "Mensalmente";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div
       className={`border rounded-lg p-4 mb-3 ${
@@ -27,14 +47,31 @@ const TaskItem = ({ task, onEdit, onDelete, onToggleComplete }) => {
           </button>
 
           <div>
-            <h3
-              className={`font-medium ${
-                task.completed ? "line-through text-gray-500" : "text-gray-900"
-              }`}
-            >
-              {task.title}
-              {!task.completed && <TaskNotificationBadge task={task} />}
-            </h3>
+            <div className="flex items-center">
+              <h3
+                className={`font-medium ${
+                  task.completed
+                    ? "line-through text-gray-500"
+                    : "text-gray-900"
+                }`}
+              >
+                {task.title}
+                {!task.completed && <TaskNotificationBadge task={task} />}
+              </h3>
+
+              {/* Ícone de recorrência */}
+              {task.is_recurring && (
+                <div
+                  className="ml-2 text-green-500 flex items-center"
+                  title={getRecurrenceDescription(task.recurrence_type)}
+                >
+                  <FaRecycle size={14} />
+                  <span className="ml-1 text-xs">
+                    {getRecurrenceDescription(task.recurrence_type)}
+                  </span>
+                </div>
+              )}
+            </div>
 
             {task.description && (
               <p className="mt-1 text-sm text-gray-600">{task.description}</p>

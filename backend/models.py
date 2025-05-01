@@ -13,6 +13,10 @@ class Task(db.Model):
     due_date = db.Column(db.DateTime, nullable=True)
     completed = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(BRAZIL_TZ))
+    # Campos para recorrência
+    is_recurring = db.Column(db.Boolean, default=False)
+    recurrence_type = db.Column(db.String(20), nullable=True)  # 'daily', 'weekly', 'monthly'
+    parent_task_id = db.Column(db.Integer, nullable=True)  # Para rastrear relações entre tarefas recorrentes
     
     def to_dict(self):
         return {
@@ -21,5 +25,8 @@ class Task(db.Model):
             'description': self.description,
             'due_date': self.due_date.isoformat() if self.due_date else None,
             'completed': self.completed,
-            'created_at': self.created_at.isoformat()
+            'created_at': self.created_at.isoformat(),
+            'is_recurring': self.is_recurring,
+            'recurrence_type': self.recurrence_type,
+            'parent_task_id': self.parent_task_id
         }

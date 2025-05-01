@@ -6,6 +6,7 @@ import {
   FaCalendarDay,
   FaCalendarWeek,
   FaCalendarAlt,
+  FaRecycle,
 } from "react-icons/fa";
 import TaskItem from "./TaskItem";
 import TaskForm from "./TaskForm";
@@ -22,7 +23,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
   const [sortBy, setSortBy] = useState("created_at");
   const [showSortOptions, setShowSortOptions] = useState(false);
   const [showCompletedTasks, setShowCompletedTasks] = useState(true);
-  const [activeFilter, setActiveFilter] = useState("all"); // 'all', 'today', 'tomorrow', 'future'
+  const [activeFilter, setActiveFilter] = useState("all"); // 'all', 'today', 'tomorrow', 'future', 'recurring'
 
   const loadTasks = useCallback(async () => {
     try {
@@ -115,15 +116,22 @@ const TaskList = ({ id, onTasksUpdate }) => {
     try {
       const task = tasks.find((t) => t.id === taskId);
       const updatedTask = await updateTask(taskId, { ...task, completed });
-      const updatedTasks = tasks.map((task) =>
-        task.id === updatedTask.id ? updatedTask : task
-      );
 
-      setTasks(updatedTasks);
+      // O servidor vai criar a próxima tarefa recorrente se necessário
+      // Vamos recarregar todas as tarefas para obter a nova tarefa
+      if (completed && task.is_recurring) {
+        await loadTasks();
+      } else {
+        const updatedTasks = tasks.map((t) =>
+          t.id === updatedTask.id ? updatedTask : t
+        );
 
-      // Propagar tarefas atualizadas
-      if (onTasksUpdate) {
-        onTasksUpdate(updatedTasks);
+        setTasks(updatedTasks);
+
+        // Propagar tarefas atualizadas
+        if (onTasksUpdate) {
+          onTasksUpdate(updatedTasks);
+        }
       }
     } catch (err) {
       setError("Erro ao atualizar estado da tarefa.");
@@ -146,9 +154,14 @@ const TaskList = ({ id, onTasksUpdate }) => {
     setShowSortOptions(false);
   };
 
-  // Função para classificar tarefas por data
-  const filterTasksByDate = (tasks) => {
+  // Função para classificar tarefas por data e recorrência
+  const filterTasksByDateAndRecurrence = (tasks) => {
     return tasks.filter((task) => {
+      // Para o filtro "Recorrentes"
+      if (activeFilter === "recurring") {
+        return task.is_recurring;
+      }
+
       if (!task.due_date) {
         // Tarefas sem data de vencimento são mostradas em "Todas" ou quando o filtro é "Tarefas sem data"
         return activeFilter === "all" || activeFilter === "no-date";
@@ -174,7 +187,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
 
   // Filtrar tarefas ativas e concluídas
   const activeTasks = tasks.filter((task) => !task.completed);
-  const filteredActiveTasks = filterTasksByDate(activeTasks);
+  const filteredActiveTasks = filterTasksByDateAndRecurrence(activeTasks);
   const completedTasks = tasks.filter((task) => task.completed);
 
   // Ordenar tarefas ativas
@@ -214,6 +227,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
         parseISO(task.due_date) > new Date()
     ).length,
     "no-date": activeTasks.filter((task) => !task.due_date).length,
+    recurring: activeTasks.filter((task) => task.is_recurring).length,
   };
 
   return (
@@ -328,6 +342,21 @@ const TaskList = ({ id, onTasksUpdate }) => {
               {taskCounts["no-date"]}
             </span>
           </button>
+
+          <button
+            onClick={() => setActiveFilter("recurring")}
+            className={`flex items-center px-4 py-2 mx-1 rounded-full ${
+              activeFilter === "recurring"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            }`}
+          >
+            <FaRecycle className="mr-2" />
+            Recorrentes
+            <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
+              {taskCounts.recurring}
+            </span>
+          </button>
         </div>
 
         <div className="flex justify-end mb-4 relative">
@@ -392,6 +421,8 @@ const TaskList = ({ id, onTasksUpdate }) => {
                   ? "Tarefas de Amanhã"
                   : activeFilter === "future"
                   ? "Tarefas Futuras"
+                  : activeFilter === "recurring"
+                  ? "Tarefas Recorrentes"
                   : "Tarefas Sem Data"}
               </h2>
               {sortedActiveTasks.length === 0 ? (
@@ -405,6 +436,8 @@ const TaskList = ({ id, onTasksUpdate }) => {
                           ? "para amanhã"
                           : activeFilter === "future"
                           ? "futura"
+                          : activeFilter === "recurring"
+                          ? "recorrente"
                           : "sem data definida"
                       }!`}
                 </div>

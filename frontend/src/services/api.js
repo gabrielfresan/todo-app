@@ -28,3 +28,17 @@ export const deleteTask = async (id) => {
   await api.delete(`/tasks/${id}`);
   return true;
 };
+
+// Função auxiliar para formatação de string de recorrência
+export const getRecurrenceDescription = (recurrenceType) => {
+  switch (recurrenceType) {
+    case "daily":
+      return "Diariamente";
+    case "weekly":
+      return "Semanalmente";
+    case "monthly":
+      return "Mensalmente";
+    default:
+      return "Não recorrente";
+  }
+};
