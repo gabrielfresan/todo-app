@@ -2,16 +2,15 @@ import { useState, useEffect, useCallback } from "react";
 import { FaPlus, FaAngleDown, FaAngleRight } from "react-icons/fa";
 import TaskItem from "./TaskItem";
 import TaskForm from "./TaskForm";
+import Modal from "./Modal";
 import { getTasks, createTask, updateTask, deleteTask } from "../services/api";
-// Não precisamos importar checkForDueTasks aqui, apenas no componente que realmente o usa
-// import { checkForDueTasks } from "../utils/notificationUtils";
 
-// Atualize a definição da função para aceitar as props id e onTasksUpdate
 const TaskList = ({ id, onTasksUpdate }) => {
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [sortBy, setSortBy] = useState("created_at");
   const [showSortOptions, setShowSortOptions] = useState(false);
@@ -73,7 +72,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
         onTasksUpdate(updatedTasks);
       }
 
-      setIsFormOpen(false);
+      setIsModalOpen(false);
       setCurrentTask(null);
     } catch (err) {
       setError("Erro ao atualizar tarefa.");
@@ -121,7 +120,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
 
   const handleEditTask = (task) => {
     setCurrentTask(task);
-    setIsFormOpen(true);
+    setIsModalOpen(true);
   };
 
   const handleSort = (field) => {
@@ -153,7 +152,6 @@ const TaskList = ({ id, onTasksUpdate }) => {
     return new Date(b.created_at) - new Date(a.created_at);
   });
 
-  // Atualize o retorno do JSX para incluir o id
   return (
     <div id={id} className="container mx-auto max-w-3xl p-4">
       <div className="flex justify-between items-center mb-6">
@@ -176,21 +174,37 @@ const TaskList = ({ id, onTasksUpdate }) => {
         </div>
       )}
 
+      {/* Form for new tasks */}
       {isFormOpen && (
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">
-            {currentTask ? "Editar Tarefa" : "Nova Tarefa"}
-          </h2>
+          <h2 className="text-xl font-semibold mb-4">Nova Tarefa</h2>
           <TaskForm
-            task={currentTask}
-            onSubmit={currentTask ? handleUpdateTask : handleCreateTask}
+            task={null}
+            onSubmit={handleCreateTask}
             onCancel={() => {
               setIsFormOpen(false);
-              setCurrentTask(null);
             }}
           />
         </div>
       )}
+
+      {/* Modal for editing tasks */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Editar Tarefa"
+      >
+        {currentTask && (
+          <TaskForm
+            task={currentTask}
+            onSubmit={handleUpdateTask}
+            onCancel={() => {
+              setIsModalOpen(false);
+              setCurrentTask(null);
+            }}
+          />
+        )}
+      </Modal>
 
       <div className="bg-white shadow-md rounded-lg p-6">
         <div className="flex justify-end mb-4 relative">

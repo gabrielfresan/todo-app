@@ -14,6 +14,12 @@ const TaskForm = ({ task, onSubmit, onCancel }) => {
       setDescription(task.description || "");
       setDueDate(task.due_date ? new Date(task.due_date) : null);
       setCompleted(task.completed || false);
+    } else {
+      // Reset form when creating a new task
+      setTitle("");
+      setDescription("");
+      setDueDate(null);
+      setCompleted(false);
     }
   }, [task]);
 
@@ -41,7 +47,8 @@ const TaskForm = ({ task, onSubmit, onCancel }) => {
             onChange={(e) => setTitle(e.target.value)}
             required
             placeholder="Digite o título da tarefa (obrigatório)"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
+            autoFocus
           />
         </label>
       </div>
@@ -53,7 +60,7 @@ const TaskForm = ({ task, onSubmit, onCancel }) => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Digite a descrição da tarefa (opcional)"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
             rows="3"
           ></textarea>
         </label>
@@ -72,13 +79,13 @@ const TaskForm = ({ task, onSubmit, onCancel }) => {
             timeIntervals={15}
             dateFormat="dd/MM/yyyy HH:mm"
             placeholderText="Selecione uma data e hora"
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3"
+            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border"
             wrapperClassName="w-full"
           />
         </div>
       </div>
 
-      {/* Só mostra a opção "Concluída" quando estiver editando uma tarefa existente */}
+      {/* Mostra a opção "Concluída" quando estiver editando uma tarefa existente */}
       {task && (
         <div>
           <label className="flex items-center">
@@ -93,7 +100,7 @@ const TaskForm = ({ task, onSubmit, onCancel }) => {
         </div>
       )}
 
-      <div className="flex justify-end space-x-2">
+      <div className="flex justify-end space-x-2 mt-6">
         <button
           type="button"
           onClick={onCancel}

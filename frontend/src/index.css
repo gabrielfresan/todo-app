@@ -23,3 +23,33 @@ body {
   max-height: 400px;
   overflow-y: auto;
 }
+
+/* Estilo para indicar elementos clicáveis */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Estilo para o modal de sobreposição */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  max-width: 32rem;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}

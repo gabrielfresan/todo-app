@@ -1,4 +1,4 @@
-import { FaEdit, FaTrash, FaCheck, FaRegCircle } from "react-icons/fa";
+import { FaTrash, FaCheck, FaRegCircle } from "react-icons/fa";
 import TaskNotificationBadge from "./TaskNotificationBadge";
 import { formatTaskDate, isPastDate } from "../utils/dateUtils";
 
@@ -7,12 +7,16 @@ const TaskItem = ({ task, onEdit, onDelete, onToggleComplete }) => {
     <div
       className={`border rounded-lg p-4 mb-3 ${
         task.completed ? "bg-gray-50" : "bg-white"
-      }`}
+      } cursor-pointer hover:bg-gray-50 transition-colors`}
+      onClick={() => onEdit(task)}
     >
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-3">
           <button
-            onClick={() => onToggleComplete(task.id, !task.completed)}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent triggering the parent div's onClick
+              onToggleComplete(task.id, !task.completed);
+            }}
             className="mt-1 text-lg"
           >
             {task.completed ? (
@@ -52,13 +56,10 @@ const TaskItem = ({ task, onEdit, onDelete, onToggleComplete }) => {
 
         <div className="flex space-x-2">
           <button
-            onClick={() => onEdit(task)}
-            className="text-blue-500 hover:text-blue-700"
-          >
-            <FaEdit />
-          </button>
-          <button
-            onClick={() => onDelete(task.id)}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent triggering the parent div's onClick
+              onDelete(task.id);
+            }}
             className="text-red-500 hover:text-red-700"
           >
             <FaTrash />
