@@ -17,7 +17,7 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     
     # Configure CORS
-    CORS(app, origins=["http://localhost:5173", "https://todo-app-drab-two.vercel.app"])
+    CORS(app, origins=["http://localhost:5173", "https://todo-app-drab-two.vercel.app", "https://todo.fresan.tech"])
     
     # Register blueprints
     app.register_blueprint(api, url_prefix='/api')
