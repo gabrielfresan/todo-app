@@ -231,7 +231,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
   };
 
   return (
-    <div id={id} className="container mx-auto max-w-3xl p-4">
+    <div id={id} className="container mx-auto max-w-5xl p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Minhas Tarefas</h1>
 
@@ -266,17 +266,17 @@ const TaskList = ({ id, onTasksUpdate }) => {
       </Modal>
 
       <div className="bg-white shadow-md rounded-lg p-6">
-        {/* Filtros de data */}
-        <div className="flex overflow-x-auto mb-6 pb-2 -mx-1">
+        {/* Filtros de data - Modificado para distribuir melhor o espaço e evitar scrollbar */}
+        <div className="grid grid-cols-6 gap-2 mb-6">
           <button
             onClick={() => setActiveFilter("all")}
-            className={`flex items-center px-4 py-2 mx-1 rounded-full ${
+            className={`flex items-center justify-center px-3 py-2 rounded-full text-sm ${
               activeFilter === "all"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarAlt className="mr-2" />
+            <FaCalendarAlt className="mr-1" />
             Todas
             <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
               {taskCounts.all}
@@ -285,13 +285,13 @@ const TaskList = ({ id, onTasksUpdate }) => {
 
           <button
             onClick={() => setActiveFilter("today")}
-            className={`flex items-center px-4 py-2 mx-1 rounded-full ${
+            className={`flex items-center justify-center px-3 py-2 rounded-full text-sm ${
               activeFilter === "today"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarDay className="mr-2" />
+            <FaCalendarDay className="mr-1" />
             Hoje
             <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
               {taskCounts.today}
@@ -300,13 +300,13 @@ const TaskList = ({ id, onTasksUpdate }) => {
 
           <button
             onClick={() => setActiveFilter("tomorrow")}
-            className={`flex items-center px-4 py-2 mx-1 rounded-full ${
+            className={`flex items-center justify-center px-3 py-2 rounded-full text-sm ${
               activeFilter === "tomorrow"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarDay className="mr-2" />
+            <FaCalendarDay className="mr-1" />
             Amanhã
             <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
               {taskCounts.tomorrow}
@@ -315,13 +315,13 @@ const TaskList = ({ id, onTasksUpdate }) => {
 
           <button
             onClick={() => setActiveFilter("future")}
-            className={`flex items-center px-4 py-2 mx-1 rounded-full ${
+            className={`flex items-center justify-center px-3 py-2 rounded-full text-sm ${
               activeFilter === "future"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarWeek className="mr-2" />
+            <FaCalendarWeek className="mr-1" />
             Futuras
             <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
               {taskCounts.future}
@@ -330,13 +330,13 @@ const TaskList = ({ id, onTasksUpdate }) => {
 
           <button
             onClick={() => setActiveFilter("no-date")}
-            className={`flex items-center px-4 py-2 mx-1 rounded-full ${
+            className={`flex items-center justify-center px-3 py-2 rounded-full text-sm ${
               activeFilter === "no-date"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarAlt className="mr-2" />
+            <FaCalendarAlt className="mr-1" />
             Sem data
             <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
               {taskCounts["no-date"]}
@@ -345,13 +345,13 @@ const TaskList = ({ id, onTasksUpdate }) => {
 
           <button
             onClick={() => setActiveFilter("recurring")}
-            className={`flex items-center px-4 py-2 mx-1 rounded-full ${
+            className={`flex items-center justify-center px-3 py-2 rounded-full text-sm ${
               activeFilter === "recurring"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaRecycle className="mr-2" />
+            <FaRecycle className="mr-1" />
             Recorrentes
             <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
               {taskCounts.recurring}
