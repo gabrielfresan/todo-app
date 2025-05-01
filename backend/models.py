@@ -10,9 +10,9 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    due_date = db.Column(db.DateTime, nullable=True)
+    due_date = db.Column(db.DateTime(timezone=True), nullable=True)
     completed = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(BRAZIL_TZ))
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(BRAZIL_TZ))
     # Campos para recorrência
     is_recurring = db.Column(db.Boolean, default=False)
     recurrence_type = db.Column(db.String(20), nullable=True)  # 'daily', 'weekly', 'monthly'
