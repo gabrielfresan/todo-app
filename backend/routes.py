@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from models import db, Task
 from datetime import datetime
+from notifications import get_due_tasks  # Importar a função que criamos
 
 api = Blueprint('api', __name__)
 
@@ -60,3 +61,11 @@ def delete_task(task_id):
     db.session.commit()
     
     return '', 204
+
+@api.route('/tasks/due', methods=['GET'])
+def get_due_tasks_route():
+    """
+    Retornar todas as tarefas que estão atualmente vencidas mas não completadas.
+    """
+    due_tasks = get_due_tasks()
+    return jsonify([task.to_dict() for task in due_tasks])

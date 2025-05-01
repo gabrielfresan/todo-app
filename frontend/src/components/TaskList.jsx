@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FaPlus, FaAngleDown, FaAngleRight } from "react-icons/fa";
 import TaskItem from "./TaskItem";
 import TaskForm from "./TaskForm";
 import { getTasks, createTask, updateTask, deleteTask } from "../services/api";
+// Não precisamos importar checkForDueTasks aqui, apenas no componente que realmente o usa
+// import { checkForDueTasks } from "../utils/notificationUtils";
 
-const TaskList = () => {
+// Atualize a definição da função para aceitar as props id e onTasksUpdate
+const TaskList = ({ id, onTasksUpdate }) => {
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,11 +17,17 @@ const TaskList = () => {
   const [showSortOptions, setShowSortOptions] = useState(false);
   const [showCompletedTasks, setShowCompletedTasks] = useState(true);
 
-  const loadTasks = async () => {
+  const loadTasks = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await getTasks();
       setTasks(data);
+
+      // Propagar dados de tarefas para o componente App
+      if (onTasksUpdate) {
+        onTasksUpdate(data);
+      }
+
       setError(null);
     } catch (err) {
       setError("Erro ao carregar tarefas. Tente novamente mais tarde.");
@@ -26,16 +35,23 @@ const TaskList = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [onTasksUpdate]);
 
   useEffect(() => {
     loadTasks();
-  }, []);
+  }, [loadTasks]);
 
   const handleCreateTask = async (taskData) => {
     try {
       const newTask = await createTask(taskData);
-      setTasks([...tasks, newTask]);
+      const updatedTasks = [...tasks, newTask];
+      setTasks(updatedTasks);
+
+      // Propagar tarefas atualizadas
+      if (onTasksUpdate) {
+        onTasksUpdate(updatedTasks);
+      }
+
       setIsFormOpen(false);
     } catch (err) {
       setError("Erro ao criar tarefa.");
@@ -46,9 +62,17 @@ const TaskList = () => {
   const handleUpdateTask = async (taskData) => {
     try {
       const updatedTask = await updateTask(currentTask.id, taskData);
-      setTasks(
-        tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+      const updatedTasks = tasks.map((task) =>
+        task.id === updatedTask.id ? updatedTask : task
       );
+
+      setTasks(updatedTasks);
+
+      // Propagar tarefas atualizadas
+      if (onTasksUpdate) {
+        onTasksUpdate(updatedTasks);
+      }
+
       setIsFormOpen(false);
       setCurrentTask(null);
     } catch (err) {
@@ -61,7 +85,13 @@ const TaskList = () => {
     if (window.confirm("Tem certeza que deseja excluir esta tarefa?")) {
       try {
         await deleteTask(taskId);
-        setTasks(tasks.filter((task) => task.id !== taskId));
+        const updatedTasks = tasks.filter((task) => task.id !== taskId);
+        setTasks(updatedTasks);
+
+        // Propagar tarefas atualizadas
+        if (onTasksUpdate) {
+          onTasksUpdate(updatedTasks);
+        }
       } catch (err) {
         setError("Erro ao excluir tarefa.");
         console.error(err);
@@ -73,9 +103,16 @@ const TaskList = () => {
     try {
       const task = tasks.find((t) => t.id === taskId);
       const updatedTask = await updateTask(taskId, { ...task, completed });
-      setTasks(
-        tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+      const updatedTasks = tasks.map((task) =>
+        task.id === updatedTask.id ? updatedTask : task
       );
+
+      setTasks(updatedTasks);
+
+      // Propagar tarefas atualizadas
+      if (onTasksUpdate) {
+        onTasksUpdate(updatedTasks);
+      }
     } catch (err) {
       setError("Erro ao atualizar estado da tarefa.");
       console.error(err);
@@ -116,8 +153,9 @@ const TaskList = () => {
     return new Date(b.created_at) - new Date(a.created_at);
   });
 
+  // Atualize o retorno do JSX para incluir o id
   return (
-    <div className="container mx-auto max-w-3xl p-4">
+    <div id={id} className="container mx-auto max-w-3xl p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Minhas Tarefas</h1>
 
