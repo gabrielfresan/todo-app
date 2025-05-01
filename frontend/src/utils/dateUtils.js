@@ -1,4 +1,11 @@
-import { format, parseISO } from "date-fns";
+import {
+  format,
+  parseISO,
+  isToday,
+  isTomorrow,
+  isAfter,
+  addDays,
+} from "date-fns";
 import { pt } from "date-fns/locale";
 
 // Função auxiliar para formatar datas com timezone correto
@@ -22,4 +29,33 @@ export const isPastDate = (dateString) => {
   const now = new Date();
 
   return date <= now;
+};
+
+// Exportando funções úteis do date-fns para filtros
+export { isToday, isTomorrow };
+
+// Função para verificar se uma data é futura (nem hoje nem amanhã)
+export const isFutureDate = (dateString) => {
+  if (!dateString) return false;
+
+  const date = parseISO(dateString);
+  const dayAfterTomorrow = addDays(new Date(), 2);
+
+  // Retorna true se a data for posterior ao dia depois de amanhã
+  return isAfter(date, dayAfterTomorrow);
+};
+
+// Função para obter a descrição da data de forma amigável
+export const getRelativeDateDescription = (dateString) => {
+  if (!dateString) return "Sem data";
+
+  const date = parseISO(dateString);
+
+  if (isToday(date)) {
+    return "Hoje";
+  } else if (isTomorrow(date)) {
+    return "Amanhã";
+  } else {
+    return formatTaskDate(dateString);
+  }
 };

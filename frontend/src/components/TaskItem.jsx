@@ -1,6 +1,6 @@
-import { FaTrash, FaCheck, FaRegCircle } from "react-icons/fa";
+import { FaTrash, FaCheck, FaRegCircle, FaCalendarAlt } from "react-icons/fa";
 import TaskNotificationBadge from "./TaskNotificationBadge";
-import { formatTaskDate, isPastDate } from "../utils/dateUtils";
+import { isPastDate, getRelativeDateDescription } from "../utils/dateUtils";
 
 const TaskItem = ({ task, onEdit, onDelete, onToggleComplete }) => {
   return (
@@ -40,16 +40,25 @@ const TaskItem = ({ task, onEdit, onDelete, onToggleComplete }) => {
               <p className="mt-1 text-sm text-gray-600">{task.description}</p>
             )}
 
-            {task.due_date && (
-              <p
-                className={`mt-1 text-xs ${
-                  isPastDate(task.due_date) && !task.completed
-                    ? "text-red-500 font-bold"
-                    : "text-gray-500"
-                }`}
-              >
-                Prazo: {formatTaskDate(task.due_date)}
-              </p>
+            {task.due_date ? (
+              <div className="flex items-center mt-1">
+                <FaCalendarAlt className="text-xs text-gray-500 mr-1" />
+                <p
+                  className={`text-xs ${
+                    isPastDate(task.due_date) && !task.completed
+                      ? "text-red-500 font-bold"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {getRelativeDateDescription(task.due_date)}
+                </p>
+              </div>
+            ) : (
+              <div className="flex items-center mt-1">
+                <p className="text-xs text-gray-400 italic">
+                  Sem data definida
+                </p>
+              </div>
             )}
           </div>
         </div>

@@ -1,9 +1,17 @@
 import { useState, useEffect, useCallback } from "react";
-import { FaPlus, FaAngleDown, FaAngleRight } from "react-icons/fa";
+import {
+  FaPlus,
+  FaAngleDown,
+  FaAngleRight,
+  FaCalendarDay,
+  FaCalendarWeek,
+  FaCalendarAlt,
+} from "react-icons/fa";
 import TaskItem from "./TaskItem";
 import TaskForm from "./TaskForm";
 import Modal from "./Modal";
 import { getTasks, createTask, updateTask, deleteTask } from "../services/api";
+import { isToday, isTomorrow, parseISO } from "date-fns";
 
 const TaskList = ({ id, onTasksUpdate }) => {
   const [tasks, setTasks] = useState([]);
@@ -14,6 +22,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
   const [sortBy, setSortBy] = useState("created_at");
   const [showSortOptions, setShowSortOptions] = useState(false);
   const [showCompletedTasks, setShowCompletedTasks] = useState(true);
+  const [activeFilter, setActiveFilter] = useState("all"); // 'all', 'today', 'tomorrow', 'future'
 
   const loadTasks = useCallback(async () => {
     try {
@@ -137,12 +146,39 @@ const TaskList = ({ id, onTasksUpdate }) => {
     setShowSortOptions(false);
   };
 
+  // Função para classificar tarefas por data
+  const filterTasksByDate = (tasks) => {
+    return tasks.filter((task) => {
+      if (!task.due_date) {
+        // Tarefas sem data de vencimento são mostradas em "Todas" ou quando o filtro é "Tarefas sem data"
+        return activeFilter === "all" || activeFilter === "no-date";
+      }
+
+      const dueDate = parseISO(task.due_date);
+
+      if (activeFilter === "today") {
+        return isToday(dueDate);
+      } else if (activeFilter === "tomorrow") {
+        return isTomorrow(dueDate);
+      } else if (activeFilter === "future") {
+        return (
+          !isToday(dueDate) && !isTomorrow(dueDate) && dueDate > new Date()
+        );
+      } else if (activeFilter === "all") {
+        return true;
+      }
+
+      return false;
+    });
+  };
+
   // Filtrar tarefas ativas e concluídas
   const activeTasks = tasks.filter((task) => !task.completed);
+  const filteredActiveTasks = filterTasksByDate(activeTasks);
   const completedTasks = tasks.filter((task) => task.completed);
 
   // Ordenar tarefas ativas
-  const sortedActiveTasks = [...activeTasks].sort((a, b) => {
+  const sortedActiveTasks = [...filteredActiveTasks].sort((a, b) => {
     if (sortBy === "title") {
       return a.title.localeCompare(b.title);
     } else if (sortBy === "due_date") {
@@ -160,6 +196,25 @@ const TaskList = ({ id, onTasksUpdate }) => {
   const sortedCompletedTasks = [...completedTasks].sort((a, b) => {
     return new Date(b.created_at) - new Date(a.created_at);
   });
+
+  // Contar tarefas por seção para mostrar badges
+  const taskCounts = {
+    all: activeTasks.length,
+    today: activeTasks.filter(
+      (task) => task.due_date && isToday(parseISO(task.due_date))
+    ).length,
+    tomorrow: activeTasks.filter(
+      (task) => task.due_date && isTomorrow(parseISO(task.due_date))
+    ).length,
+    future: activeTasks.filter(
+      (task) =>
+        task.due_date &&
+        !isToday(parseISO(task.due_date)) &&
+        !isTomorrow(parseISO(task.due_date)) &&
+        parseISO(task.due_date) > new Date()
+    ).length,
+    "no-date": activeTasks.filter((task) => !task.due_date).length,
+  };
 
   return (
     <div id={id} className="container mx-auto max-w-3xl p-4">
@@ -197,6 +252,84 @@ const TaskList = ({ id, onTasksUpdate }) => {
       </Modal>
 
       <div className="bg-white shadow-md rounded-lg p-6">
+        {/* Filtros de data */}
+        <div className="flex overflow-x-auto mb-6 pb-2 -mx-1">
+          <button
+            onClick={() => setActiveFilter("all")}
+            className={`flex items-center px-4 py-2 mx-1 rounded-full ${
+              activeFilter === "all"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            }`}
+          >
+            <FaCalendarAlt className="mr-2" />
+            Todas
+            <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
+              {taskCounts.all}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveFilter("today")}
+            className={`flex items-center px-4 py-2 mx-1 rounded-full ${
+              activeFilter === "today"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            }`}
+          >
+            <FaCalendarDay className="mr-2" />
+            Hoje
+            <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
+              {taskCounts.today}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveFilter("tomorrow")}
+            className={`flex items-center px-4 py-2 mx-1 rounded-full ${
+              activeFilter === "tomorrow"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            }`}
+          >
+            <FaCalendarDay className="mr-2" />
+            Amanhã
+            <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
+              {taskCounts.tomorrow}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveFilter("future")}
+            className={`flex items-center px-4 py-2 mx-1 rounded-full ${
+              activeFilter === "future"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            }`}
+          >
+            <FaCalendarWeek className="mr-2" />
+            Futuras
+            <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
+              {taskCounts.future}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveFilter("no-date")}
+            className={`flex items-center px-4 py-2 mx-1 rounded-full ${
+              activeFilter === "no-date"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            }`}
+          >
+            <FaCalendarAlt className="mr-2" />
+            Sem data
+            <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
+              {taskCounts["no-date"]}
+            </span>
+          </button>
+        </div>
+
         <div className="flex justify-end mb-4 relative">
           <button
             className="flex items-center text-sm text-gray-700 hover:text-gray-900"
@@ -251,11 +384,29 @@ const TaskList = ({ id, onTasksUpdate }) => {
             {/* Tarefas ativas */}
             <div className="mb-6">
               <h2 className="text-lg font-medium mb-3 text-gray-800">
-                Tarefas Pendentes
+                {activeFilter === "all"
+                  ? "Tarefas Pendentes"
+                  : activeFilter === "today"
+                  ? "Tarefas de Hoje"
+                  : activeFilter === "tomorrow"
+                  ? "Tarefas de Amanhã"
+                  : activeFilter === "future"
+                  ? "Tarefas Futuras"
+                  : "Tarefas Sem Data"}
               </h2>
               {sortedActiveTasks.length === 0 ? (
                 <div className="text-center py-4 text-gray-500">
-                  Você não tem tarefas pendentes. Bom trabalho!
+                  {activeFilter === "all"
+                    ? "Você não tem tarefas pendentes. Bom trabalho!"
+                    : `Nenhuma tarefa ${
+                        activeFilter === "today"
+                          ? "para hoje"
+                          : activeFilter === "tomorrow"
+                          ? "para amanhã"
+                          : activeFilter === "future"
+                          ? "futura"
+                          : "sem data definida"
+                      }!`}
                 </div>
               ) : (
                 sortedActiveTasks.map((task) => (
@@ -271,7 +422,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
             </div>
 
             {/* Tarefas concluídas - só mostra se houver tarefas concluídas */}
-            {sortedCompletedTasks.length > 0 && (
+            {sortedCompletedTasks.length > 0 && activeFilter === "all" && (
               <div className="mt-8 border-t pt-4">
                 <button
                   onClick={() => setShowCompletedTasks(!showCompletedTasks)}
