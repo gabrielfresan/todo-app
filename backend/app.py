@@ -10,7 +10,7 @@ def create_app(config_class=Config):
     
     # Inicializar extensões
     db.init_app(app)
-    CORS(app)
+    CORS(app, origins=["http://localhost:5173", "https://todo-app-drab-two.vercel.app/"])
     
     # Registrar blueprints
     app.register_blueprint(api, url_prefix='/api')
