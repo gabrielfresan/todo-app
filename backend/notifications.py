@@ -1,11 +1,11 @@
-from datetime import datetime
-from models import Task
+from datetime import datetime, timezone, timedelta
+from models import Task, BRAZIL_TZ
 
 def get_due_tasks():
     """
-    Obter todas as tarefas que estão vencidas mas não completadas.
+    Get all tasks that are due but not completed.
     """
-    now = datetime.utcnow()
+    now = datetime.now(BRAZIL_TZ)
     due_tasks = Task.query.filter(
         Task.due_date <= now,
         Task.completed == False

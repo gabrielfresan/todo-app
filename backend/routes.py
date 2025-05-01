@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
-from models import db, Task
-from datetime import datetime
-from notifications import get_due_tasks  # Importar a função que criamos
+from models import db, Task, BRAZIL_TZ
+from datetime import datetime, timezone
 
 api = Blueprint('api', __name__)
 
@@ -21,7 +20,10 @@ def create_task():
     
     due_date = None
     if data.get('due_date'):
-        due_date = datetime.fromisoformat(data['due_date'].replace('Z', '+00:00'))
+        # Converte a string ISO para datetime com timezone
+        dt = datetime.fromisoformat(data['due_date'].replace('Z', '+00:00'))
+        # Convertemos para o fuso horário local (UTC-3)
+        due_date = dt.astimezone(BRAZIL_TZ)
     
     task = Task(
         title=data['title'],
@@ -45,7 +47,10 @@ def update_task(task_id):
     if 'description' in data:
         task.description = data['description']
     if 'due_date' in data and data['due_date']:
-        task.due_date = datetime.fromisoformat(data['due_date'].replace('Z', '+00:00'))
+        # Converte a string ISO para datetime com timezone
+        dt = datetime.fromisoformat(data['due_date'].replace('Z', '+00:00'))
+        # Convertemos para o fuso horário local (UTC-3)
+        task.due_date = dt.astimezone(BRAZIL_TZ)
     if 'completed' in data:
         task.completed = data['completed']
     
@@ -61,11 +66,3 @@ def delete_task(task_id):
     db.session.commit()
     
     return '', 204
-
-@api.route('/tasks/due', methods=['GET'])
-def get_due_tasks_route():
-    """
-    Retornar todas as tarefas que estão atualmente vencidas mas não completadas.
-    """
-    due_tasks = get_due_tasks()
-    return jsonify([task.to_dict() for task in due_tasks])

@@ -1,8 +1,6 @@
-import { format } from "date-fns";
-import { pt } from "date-fns/locale";
 import { FaEdit, FaTrash, FaCheck, FaRegCircle } from "react-icons/fa";
 import TaskNotificationBadge from "./TaskNotificationBadge";
-import { isTaskDue } from "../utils/notificationUtils";
+import { formatTaskDate, isPastDate } from "../utils/dateUtils";
 
 const TaskItem = ({ task, onEdit, onDelete, onToggleComplete }) => {
   return (
@@ -41,15 +39,12 @@ const TaskItem = ({ task, onEdit, onDelete, onToggleComplete }) => {
             {task.due_date && (
               <p
                 className={`mt-1 text-xs ${
-                  isTaskDue(task) && !task.completed
+                  isPastDate(task.due_date) && !task.completed
                     ? "text-red-500 font-bold"
                     : "text-gray-500"
                 }`}
               >
-                Prazo:{" "}
-                {format(new Date(task.due_date), "dd/MM/yyyy 'às' HH:mm", {
-                  locale: pt,
-                })}
+                Prazo: {formatTaskDate(task.due_date)}
               </p>
             )}
           </div>
