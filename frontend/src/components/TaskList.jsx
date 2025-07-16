@@ -325,12 +325,12 @@ const TaskList = ({ id, onTasksUpdate }) => {
       </Modal>
 
       <div className="bg-white shadow-md rounded-lg p-6">
-        {/* Filtros de data em layout organizado */}
+        {/* Filtros de data em layout responsivo */}
         <div className="mb-6">
-          <div className="flex flex-wrap gap-2 mb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 mb-4 max-w-4xl">
           <button
             onClick={() => setActiveFilter("all")}
-            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+            className={`flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
               activeFilter === "all"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
@@ -338,14 +338,14 @@ const TaskList = ({ id, onTasksUpdate }) => {
           >
             <FaCalendarAlt className="mr-1.5 w-3 h-3" />
             Todas
-            <span className="ml-1.5 bg-white bg-opacity-20 rounded-full px-1.5 py-0.5 text-xs leading-none">
+            <span className="ml-1 bg-white bg-opacity-20 rounded-full px-1 py-0.5 text-xs leading-none min-w-[16px] text-center">
               {taskCounts.all}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("today")}
-            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+            className={`flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
               activeFilter === "today"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
@@ -353,14 +353,14 @@ const TaskList = ({ id, onTasksUpdate }) => {
           >
             <FaCalendarDay className="mr-1.5 w-3 h-3" />
             Hoje
-            <span className="ml-1.5 bg-white bg-opacity-20 rounded-full px-1.5 py-0.5 text-xs leading-none">
+            <span className="ml-1 bg-white bg-opacity-20 rounded-full px-1 py-0.5 text-xs leading-none min-w-[16px] text-center">
               {taskCounts.today}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("tomorrow")}
-            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+            className={`flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
               activeFilter === "tomorrow"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
@@ -368,14 +368,14 @@ const TaskList = ({ id, onTasksUpdate }) => {
           >
             <FaCalendarDay className="mr-1.5 w-3 h-3" />
             Amanhã
-            <span className="ml-1.5 bg-white bg-opacity-20 rounded-full px-1.5 py-0.5 text-xs leading-none">
+            <span className="ml-1 bg-white bg-opacity-20 rounded-full px-1 py-0.5 text-xs leading-none min-w-[16px] text-center">
               {taskCounts.tomorrow}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("future")}
-            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+            className={`flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
               activeFilter === "future"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
@@ -383,14 +383,14 @@ const TaskList = ({ id, onTasksUpdate }) => {
           >
             <FaCalendarWeek className="mr-1.5 w-3 h-3" />
             Futuras
-            <span className="ml-1.5 bg-white bg-opacity-20 rounded-full px-1.5 py-0.5 text-xs leading-none">
+            <span className="ml-1 bg-white bg-opacity-20 rounded-full px-1 py-0.5 text-xs leading-none min-w-[16px] text-center">
               {taskCounts.future}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("no-date")}
-            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+            className={`flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
               activeFilter === "no-date"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
@@ -398,14 +398,14 @@ const TaskList = ({ id, onTasksUpdate }) => {
           >
             <FaCalendarAlt className="mr-1" />
             Sem data
-            <span className="ml-1.5 bg-white bg-opacity-20 rounded-full px-1.5 py-0.5 text-xs leading-none">
+            <span className="ml-1 bg-white bg-opacity-20 rounded-full px-1 py-0.5 text-xs leading-none min-w-[16px] text-center">
               {taskCounts["no-date"]}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("recurring")}
-            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+            className={`flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
               activeFilter === "recurring"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
@@ -413,7 +413,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
           >
             <FaRecycle className="mr-1.5 w-3 h-3" />
             Recorrentes
-            <span className="ml-1.5 bg-white bg-opacity-20 rounded-full px-1.5 py-0.5 text-xs leading-none">
+            <span className="ml-1 bg-white bg-opacity-20 rounded-full px-1 py-0.5 text-xs leading-none min-w-[16px] text-center">
               {taskCounts.recurring}
             </span>
           </button>
