@@ -38,7 +38,7 @@ def register():
         
         # Criar token de acesso
         access_token = create_access_token(
-            identity=user.id,
+            identity=str(user.id),
             expires_delta=timedelta(hours=1)
         )
         
@@ -81,7 +81,7 @@ def login():
         
         # Criar token de acesso
         access_token = create_access_token(
-            identity=user.id,
+            identity=str(user.id),
             expires_delta=timedelta(hours=1)
         )
         
@@ -100,7 +100,7 @@ def login():
 @auth.route('/me', methods=['GET'])
 @jwt_required()
 def get_current_user():
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     user = User.query.get(current_user_id)
     
     if not user:

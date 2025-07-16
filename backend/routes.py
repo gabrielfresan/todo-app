@@ -9,21 +9,21 @@ api = Blueprint('api', __name__)
 @api.route('/tasks', methods=['GET'])
 @jwt_required()
 def get_tasks():
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     tasks = Task.query.filter_by(user_id=current_user_id).all()
     return jsonify([task.to_dict() for task in tasks])
 
 @api.route('/tasks/<int:task_id>', methods=['GET'])
 @jwt_required()
 def get_task(task_id):
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     task = Task.query.filter_by(id=task_id, user_id=current_user_id).first_or_404()
     return jsonify(task.to_dict())
 
 @api.route('/tasks', methods=['POST'])
 @jwt_required()
 def create_task():
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     data = request.json
     
     due_date = None
@@ -51,7 +51,7 @@ def create_task():
 @api.route('/tasks/<int:task_id>', methods=['PUT'])
 @jwt_required()
 def update_task(task_id):
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     task = Task.query.filter_by(id=task_id, user_id=current_user_id).first_or_404()
     data = request.json
     
@@ -84,7 +84,7 @@ def update_task(task_id):
 @api.route('/tasks/<int:task_id>', methods=['DELETE'])
 @jwt_required()
 def delete_task(task_id):
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     task = Task.query.filter_by(id=task_id, user_id=current_user_id).first_or_404()
     
     db.session.delete(task)
@@ -96,7 +96,7 @@ def delete_task(task_id):
 @jwt_required()
 def delete_completed_tasks():
     """Delete all completed tasks."""
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     # Find all completed tasks for the current user
     completed_tasks = Task.query.filter_by(completed=True, user_id=current_user_id).all()
     

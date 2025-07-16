@@ -21,7 +21,15 @@ class User(db.Model):
         self.password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     
     def check_password(self, password):
-        return bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
+        try:
+            print(f"Verificando senha para usuário: {self.email}")
+            print(f"Hash armazenado: {self.password_hash[:20]}...")
+            result = bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
+            print(f"Resultado da verificação: {result}")
+            return result
+        except Exception as e:
+            print(f"Erro na verificação de senha: {str(e)}")
+            return False
     
     def to_dict(self):
         return {
