@@ -51,7 +51,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [onTasksUpdate]);
+  }, []); // Remove onTasksUpdate dependency to prevent infinite loop
 
   useEffect(() => {
     loadTasks();

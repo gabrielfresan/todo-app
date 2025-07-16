@@ -18,19 +18,10 @@ const Notifications = ({ tasks, onTaskClick }) => {
     }
   }, [tasks]);
 
-  // Configurar notificações do navegador
+  // Configurar notificações do navegador (apenas uma vez)
   useEffect(() => {
-    // Solicitar permissão para notificações do navegador
-    const requestNotificationPermission = async () => {
-      if ("Notification" in window) {
-        const permission = await Notification.requestPermission();
-        return permission === "granted";
-      }
-      return false;
-    };
-
     // IDs de tarefas que já foram notificadas
-    const notifiedTaskIds = new Set();
+    let notifiedTaskIds = new Set();
 
     // Verificar tarefas vencidas e enviar notificações
     const checkAndNotify = () => {
@@ -40,35 +31,45 @@ const Notifications = ({ tasks, onTaskClick }) => {
         currentDueTasks.forEach((task) => {
           // Só notifica para tarefas que ainda não foram notificadas
           if (!notifiedTaskIds.has(task.id)) {
-            const notification = new Notification("Tarefa Vencida", {
-              body: `A tarefa "${task.title}" está vencida!`,
-              icon: "/notification-icon.png", // Adicione um ícone na pasta public
-            });
+            try {
+              const notification = new Notification("Tarefa Vencida", {
+                body: `A tarefa "${task.title}" está vencida!`,
+                icon: "/notification-icon.png",
+              });
 
-            // Adiciona o ID da tarefa ao conjunto de tarefas notificadas
-            notifiedTaskIds.add(task.id);
+              // Adiciona o ID da tarefa ao conjunto de tarefas notificadas
+              notifiedTaskIds.add(task.id);
 
-            // Quando o usuário clica na notificação, abre o app e foca na tarefa
-            notification.onclick = () => {
-              window.focus();
-              onTaskClick(task);
-            };
+              // Quando o usuário clica na notificação, abre o app e foca na tarefa
+              notification.onclick = () => {
+                window.focus();
+                if (onTaskClick) {
+                  onTaskClick(task);
+                }
+              };
+            } catch (err) {
+              console.log("Erro ao criar notificação:", err);
+            }
           }
         });
       }
     };
 
-    // Solicitar permissão e configurar intervalo para verificar tarefas vencidas
-    requestNotificationPermission();
-
     // Verificar a cada minuto
     const intervalId = setInterval(checkAndNotify, 60000);
 
-    // Verificação inicial
-    checkAndNotify();
+    // Verificação inicial após 1 segundo
+    setTimeout(checkAndNotify, 1000);
 
     return () => clearInterval(intervalId);
-  }, [tasks, onTaskClick]);
+  }, []); // Run only once
+
+  // Handle permission request on user interaction
+  const handleRequestPermission = async () => {
+    if ("Notification" in window && Notification.permission === "default") {
+      await Notification.requestPermission();
+    }
+  };
 
   return (
     <div className="relative">
@@ -76,6 +77,7 @@ const Notifications = ({ tasks, onTaskClick }) => {
         onClick={() => {
           setShowNotifications(!showNotifications);
           setHasNewNotifications(false);
+          handleRequestPermission(); // Request permission on user click
         }}
         className="relative p-2 text-gray-700 hover:text-blue-600"
       >
