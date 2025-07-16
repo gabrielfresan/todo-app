@@ -325,71 +325,73 @@ const TaskList = ({ id, onTasksUpdate }) => {
       </Modal>
 
       <div className="bg-white shadow-md rounded-lg p-6">
-        {/* Filtros de data - Modificado para distribuir melhor o espaço e evitar scrollbar */}
-        <div className="grid grid-cols-6 gap-2 mb-6">
+        {/* Header com filtros e ordenação */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+          {/* Filtros de data */}
+          <div className="flex flex-wrap gap-3 justify-start">
           <button
             onClick={() => setActiveFilter("all")}
-            className={`flex items-center justify-center px-3 py-2 rounded-full text-sm ${
+            className={`flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeFilter === "all"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarAlt className="mr-1" />
+            <FaCalendarAlt className="mr-2" />
             Todas
-            <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
+            <span className="ml-2 bg-white bg-opacity-20 rounded-full px-2 py-0.5 text-xs">
               {taskCounts.all}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("today")}
-            className={`flex items-center justify-center px-3 py-2 rounded-full text-sm ${
+            className={`flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeFilter === "today"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarDay className="mr-1" />
+            <FaCalendarDay className="mr-2" />
             Hoje
-            <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
+            <span className="ml-2 bg-white bg-opacity-20 rounded-full px-2 py-0.5 text-xs">
               {taskCounts.today}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("tomorrow")}
-            className={`flex items-center justify-center px-3 py-2 rounded-full text-sm ${
+            className={`flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeFilter === "tomorrow"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarDay className="mr-1" />
+            <FaCalendarDay className="mr-2" />
             Amanhã
-            <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
+            <span className="ml-2 bg-white bg-opacity-20 rounded-full px-2 py-0.5 text-xs">
               {taskCounts.tomorrow}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("future")}
-            className={`flex items-center justify-center px-3 py-2 rounded-full text-sm ${
+            className={`flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeFilter === "future"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarWeek className="mr-1" />
+            <FaCalendarWeek className="mr-2" />
             Futuras
-            <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
+            <span className="ml-2 bg-white bg-opacity-20 rounded-full px-2 py-0.5 text-xs">
               {taskCounts.future}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("no-date")}
-            className={`flex items-center justify-center px-3 py-2 rounded-full text-sm ${
+            className={`flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeFilter === "no-date"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
@@ -397,28 +399,29 @@ const TaskList = ({ id, onTasksUpdate }) => {
           >
             <FaCalendarAlt className="mr-1" />
             Sem data
-            <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
+            <span className="ml-2 bg-white bg-opacity-20 rounded-full px-2 py-0.5 text-xs">
               {taskCounts["no-date"]}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("recurring")}
-            className={`flex items-center justify-center px-3 py-2 rounded-full text-sm ${
+            className={`flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeFilter === "recurring"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaRecycle className="mr-1" />
+            <FaRecycle className="mr-2" />
             Recorrentes
-            <span className="ml-1 bg-gray-200 text-gray-800 rounded-full px-2 text-xs">
+            <span className="ml-2 bg-white bg-opacity-20 rounded-full px-2 py-0.5 text-xs">
               {taskCounts.recurring}
             </span>
           </button>
-        </div>
+          </div>
 
-        <div className="flex justify-end mb-4 relative">
+          {/* Ordenação */}
+          <div className="flex justify-end relative">
           <button
             className="flex items-center text-sm text-gray-700 hover:text-gray-900"
             onClick={() => setShowSortOptions(!showSortOptions)}
@@ -459,6 +462,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
               </button>
             </div>
           )}
+          </div>
         </div>
 
         {isLoading ? (
