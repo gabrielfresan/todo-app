@@ -28,7 +28,11 @@ def create_app(config_class=Config):
     
     # Create database tables
     with app.app_context():
+        # Drop all tables and recreate (for development)
+        print("Criando tabelas do banco de dados...")
+        db.drop_all()
         db.create_all()
+        print("Tabelas criadas com sucesso!")
     
     @app.route('/')
     def hello():
