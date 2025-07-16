@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ['python39']
+
+[phases.install]
+cmds = ['pip install -r backend/requirements.txt']
+
+[phases.build]
+cmds = ['cd backend']
+
+[start]
+cmd = 'cd backend && gunicorn wsgi:app --bind 0.0.0.0:$PORT'
