@@ -27,9 +27,14 @@ export default function Login() {
     setError('');
 
     try {
+      console.log('Tentando fazer login com:', formData.email);
       const response = await loginApi(formData);
+      console.log('Resposta do login:', response);
+      
       login(response.user, response.access_token);
     } catch (err) {
+      console.error('Erro no login:', err);
+      console.error('Resposta do erro:', err.response?.data);
       setError(err.response?.data?.error || 'Erro ao fazer login');
     } finally {
       setIsLoading(false);

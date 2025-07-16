@@ -7,31 +7,42 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/register', methods=['POST'])
 def register():
-    data = request.get_json()
-    
-    if not data or not data.get('email') or not data.get('password') or not data.get('name'):
-        return jsonify({'error': 'Email, name e password são obrigatórios'}), 400
-    
-    # Verificar se usuário já existe
-    if User.query.filter_by(email=data['email']).first():
-        return jsonify({'error': 'Email já está em uso'}), 409
-    
-    # Criar novo usuário
-    user = User(
-        email=data['email'],
-        name=data['name']
-    )
-    user.set_password(data['password'])
-    
     try:
+        data = request.get_json()
+        
+        if not data or not data.get('email') or not data.get('password') or not data.get('name'):
+            return jsonify({'error': 'Email, name e password são obrigatórios'}), 400
+        
+        print(f"Tentativa de registro para email: {data['email']}")  # Debug
+        
+        # Verificar se usuário já existe
+        if User.query.filter_by(email=data['email']).first():
+            print(f"Email já existe: {data['email']}")  # Debug
+            return jsonify({'error': 'Email já está em uso'}), 409
+        
+        print("Criando novo usuário")  # Debug
+        
+        # Criar novo usuário
+        user = User(
+            email=data['email'],
+            name=data['name']
+        )
+        user.set_password(data['password'])
+        
+        print("Senha hash criada")  # Debug
+        
         db.session.add(user)
         db.session.commit()
+        
+        print("Usuário salvo no banco")  # Debug
         
         # Criar token de acesso
         access_token = create_access_token(
             identity=user.id,
             expires_delta=timedelta(hours=1)
         )
+        
+        print("Token gerado para novo usuário")  # Debug
         
         return jsonify({
             'message': 'Usuário criado com sucesso',
@@ -40,32 +51,51 @@ def register():
         }), 201
         
     except Exception as e:
+        print(f"Erro no registro: {str(e)}")  # Debug
         db.session.rollback()
-        return jsonify({'error': 'Erro ao criar usuário'}), 500
+        return jsonify({'error': f'Erro ao criar usuário: {str(e)}'}), 500
 
 @auth.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    
-    if not data or not data.get('email') or not data.get('password'):
-        return jsonify({'error': 'Email e password são obrigatórios'}), 400
-    
-    user = User.query.filter_by(email=data['email']).first()
-    
-    if not user or not user.check_password(data['password']):
-        return jsonify({'error': 'Email ou senha inválidos'}), 401
-    
-    # Criar token de acesso
-    access_token = create_access_token(
-        identity=user.id,
-        expires_delta=timedelta(hours=1)
-    )
-    
-    return jsonify({
-        'message': 'Login realizado com sucesso',
-        'access_token': access_token,
-        'user': user.to_dict()
-    }), 200
+    try:
+        data = request.get_json()
+        
+        if not data or not data.get('email') or not data.get('password'):
+            return jsonify({'error': 'Email e password são obrigatórios'}), 400
+        
+        print(f"Tentativa de login para email: {data['email']}")  # Debug
+        
+        user = User.query.filter_by(email=data['email']).first()
+        
+        if not user:
+            print(f"Usuário não encontrado para email: {data['email']}")  # Debug
+            return jsonify({'error': 'Email ou senha inválidos'}), 401
+        
+        print(f"Usuário encontrado: {user.email}")  # Debug
+        
+        if not user.check_password(data['password']):
+            print("Senha incorreta")  # Debug
+            return jsonify({'error': 'Email ou senha inválidos'}), 401
+        
+        print("Senha correta, gerando token")  # Debug
+        
+        # Criar token de acesso
+        access_token = create_access_token(
+            identity=user.id,
+            expires_delta=timedelta(hours=1)
+        )
+        
+        print("Token gerado com sucesso")  # Debug
+        
+        return jsonify({
+            'message': 'Login realizado com sucesso',
+            'access_token': access_token,
+            'user': user.to_dict()
+        }), 200
+        
+    except Exception as e:
+        print(f"Erro no login: {str(e)}")  # Debug
+        return jsonify({'error': f'Erro interno: {str(e)}'}), 500
 
 @auth.route('/me', methods=['GET'])
 @jwt_required()

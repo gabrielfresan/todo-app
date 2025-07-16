@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { register as registerApi } from '../services/auth';
 import todoLogo from '../assets/todo-logo.png';
@@ -13,8 +13,10 @@ export default function Register() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -27,6 +29,7 @@ export default function Register() {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setSuccess('');
 
     if (formData.password !== formData.confirmPassword) {
       setError('As senhas não coincidem');
@@ -36,9 +39,23 @@ export default function Register() {
 
     try {
       const { confirmPassword, ...registerData } = formData;
+      console.log('Enviando dados de registro:', registerData);
+      
       const response = await registerApi(registerData);
+      console.log('Resposta do registro:', response);
+      
+      setSuccess('Conta criada com sucesso! Redirecionando...');
+      
+      // Login automático após registro
       login(response.user, response.access_token);
+      
+      // Redirecionar após 1 segundo
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
+      
     } catch (err) {
+      console.error('Erro no registro:', err);
       setError(err.response?.data?.error || 'Erro ao criar conta');
     } finally {
       setIsLoading(false);
@@ -75,6 +92,12 @@ export default function Register() {
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
                 {error}
+              </div>
+            )}
+            
+            {success && (
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+                {success}
               </div>
             )}
 
