@@ -325,73 +325,72 @@ const TaskList = ({ id, onTasksUpdate }) => {
       </Modal>
 
       <div className="bg-white shadow-md rounded-lg p-6">
-        {/* Header com filtros e ordenação */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-          {/* Filtros de data */}
-          <div className="flex flex-wrap gap-3 justify-start">
+        {/* Filtros de data em layout organizado */}
+        <div className="mb-6">
+          <div className="flex flex-wrap gap-2 mb-4">
           <button
             onClick={() => setActiveFilter("all")}
-            className={`flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
               activeFilter === "all"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarAlt className="mr-2" />
+            <FaCalendarAlt className="mr-1.5 w-3 h-3" />
             Todas
-            <span className="ml-2 bg-white bg-opacity-20 rounded-full px-2 py-0.5 text-xs">
+            <span className="ml-1.5 bg-white bg-opacity-20 rounded-full px-1.5 py-0.5 text-xs leading-none">
               {taskCounts.all}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("today")}
-            className={`flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
               activeFilter === "today"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarDay className="mr-2" />
+            <FaCalendarDay className="mr-1.5 w-3 h-3" />
             Hoje
-            <span className="ml-2 bg-white bg-opacity-20 rounded-full px-2 py-0.5 text-xs">
+            <span className="ml-1.5 bg-white bg-opacity-20 rounded-full px-1.5 py-0.5 text-xs leading-none">
               {taskCounts.today}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("tomorrow")}
-            className={`flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
               activeFilter === "tomorrow"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarDay className="mr-2" />
+            <FaCalendarDay className="mr-1.5 w-3 h-3" />
             Amanhã
-            <span className="ml-2 bg-white bg-opacity-20 rounded-full px-2 py-0.5 text-xs">
+            <span className="ml-1.5 bg-white bg-opacity-20 rounded-full px-1.5 py-0.5 text-xs leading-none">
               {taskCounts.tomorrow}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("future")}
-            className={`flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
               activeFilter === "future"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarWeek className="mr-2" />
+            <FaCalendarWeek className="mr-1.5 w-3 h-3" />
             Futuras
-            <span className="ml-2 bg-white bg-opacity-20 rounded-full px-2 py-0.5 text-xs">
+            <span className="ml-1.5 bg-white bg-opacity-20 rounded-full px-1.5 py-0.5 text-xs leading-none">
               {taskCounts.future}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("no-date")}
-            className={`flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
               activeFilter === "no-date"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
@@ -399,29 +398,30 @@ const TaskList = ({ id, onTasksUpdate }) => {
           >
             <FaCalendarAlt className="mr-1" />
             Sem data
-            <span className="ml-2 bg-white bg-opacity-20 rounded-full px-2 py-0.5 text-xs">
+            <span className="ml-1.5 bg-white bg-opacity-20 rounded-full px-1.5 py-0.5 text-xs leading-none">
               {taskCounts["no-date"]}
             </span>
           </button>
 
           <button
             onClick={() => setActiveFilter("recurring")}
-            className={`flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
               activeFilter === "recurring"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaRecycle className="mr-2" />
+            <FaRecycle className="mr-1.5 w-3 h-3" />
             Recorrentes
-            <span className="ml-2 bg-white bg-opacity-20 rounded-full px-2 py-0.5 text-xs">
+            <span className="ml-1.5 bg-white bg-opacity-20 rounded-full px-1.5 py-0.5 text-xs leading-none">
               {taskCounts.recurring}
             </span>
           </button>
           </div>
-
-          {/* Ordenação */}
-          <div className="flex justify-end relative">
+          
+          {/* Ordenação em linha separada */}
+          <div className="flex justify-end border-t pt-4">
+            <div className="relative">
           <button
             className="flex items-center text-sm text-gray-700 hover:text-gray-900"
             onClick={() => setShowSortOptions(!showSortOptions)}
@@ -462,6 +462,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
               </button>
             </div>
           )}
+            </div>
           </div>
         </div>
 
