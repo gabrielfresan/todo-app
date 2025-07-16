@@ -13,6 +13,7 @@ export default defineConfig({
   },
   preview: {
     host: true,
-    port: process.env.PORT || 4173
+    port: process.env.PORT || 4173,
+    allowedHosts: ['todo.fresan.tech']
   }
 });
