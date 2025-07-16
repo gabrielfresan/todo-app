@@ -1,37 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import TaskList from "./TaskList";
 import Notifications from "./Notifications";
 import Header from "./Header";
-import { getTasks } from "../services/api";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const loadTasks = async () => {
-      try {
-        setIsLoading(true);
-        const data = await getTasks();
-        setTasks(data);
-      } catch (err) {
-        console.error("Erro ao carregar tarefas:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadTasks();
-
-    // Configurar um intervalo para verificar periodicamente atualizações de tarefas
-    const intervalId = setInterval(loadTasks, 60000); // Verificar a cada minuto
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  const handleTaskUpdate = () => {
-    // Recarregar tarefas quando uma for atualizada
-    getTasks().then(setTasks).catch(console.error);
+  const handleTasksUpdate = (updatedTasks) => {
+    setTasks(updatedTasks);
   };
 
   return (
@@ -50,9 +26,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">
             <TaskList 
-              tasks={tasks} 
-              onTaskUpdate={handleTaskUpdate}
-              isLoading={isLoading}
+              onTasksUpdate={handleTasksUpdate}
             />
           </div>
           <div className="lg:col-span-1">

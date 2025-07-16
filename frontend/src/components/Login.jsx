@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { login as loginApi } from '../services/auth';
 import todoLogo from '../assets/todo-logo.png';
@@ -13,6 +13,7 @@ export default function Login() {
   const [error, setError] = useState('');
   
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -32,6 +33,9 @@ export default function Login() {
       console.log('Resposta do login:', response);
       
       login(response.user, response.access_token);
+      
+      // Redirecionar após login bem-sucedido
+      navigate('/');
     } catch (err) {
       console.error('Erro no login:', err);
       console.error('Resposta do erro:', err.response?.data);

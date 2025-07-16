@@ -9,9 +9,15 @@ api = Blueprint('api', __name__)
 @api.route('/tasks', methods=['GET'])
 @jwt_required()
 def get_tasks():
-    current_user_id = int(get_jwt_identity())
-    tasks = Task.query.filter_by(user_id=current_user_id).all()
-    return jsonify([task.to_dict() for task in tasks])
+    try:
+        current_user_id = int(get_jwt_identity())
+        print(f"Carregando tarefas para usuário: {current_user_id}")
+        tasks = Task.query.filter_by(user_id=current_user_id).all()
+        print(f"Encontradas {len(tasks)} tarefas")
+        return jsonify([task.to_dict() for task in tasks])
+    except Exception as e:
+        print(f"Erro ao carregar tarefas: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 @api.route('/tasks/<int:task_id>', methods=['GET'])
 @jwt_required()
