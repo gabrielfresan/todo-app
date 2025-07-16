@@ -1,22 +1,29 @@
 from flask import Blueprint, request, jsonify
-from models import db, Task, BRAZIL_TZ
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from models import db, Task, User, BRAZIL_TZ
 from datetime import datetime, timezone, timedelta
 import calendar
 
 api = Blueprint('api', __name__)
 
 @api.route('/tasks', methods=['GET'])
+@jwt_required()
 def get_tasks():
-    tasks = Task.query.all()
+    current_user_id = get_jwt_identity()
+    tasks = Task.query.filter_by(user_id=current_user_id).all()
     return jsonify([task.to_dict() for task in tasks])
 
 @api.route('/tasks/<int:task_id>', methods=['GET'])
+@jwt_required()
 def get_task(task_id):
-    task = Task.query.get_or_404(task_id)
+    current_user_id = get_jwt_identity()
+    task = Task.query.filter_by(id=task_id, user_id=current_user_id).first_or_404()
     return jsonify(task.to_dict())
 
 @api.route('/tasks', methods=['POST'])
+@jwt_required()
 def create_task():
+    current_user_id = get_jwt_identity()
     data = request.json
     
     due_date = None
@@ -32,7 +39,8 @@ def create_task():
         due_date=due_date,
         completed=data.get('completed', False),
         is_recurring=data.get('is_recurring', False),
-        recurrence_type=data.get('recurrence_type')
+        recurrence_type=data.get('recurrence_type'),
+        user_id=current_user_id
     )
     
     db.session.add(task)
@@ -41,8 +49,10 @@ def create_task():
     return jsonify(task.to_dict()), 201
 
 @api.route('/tasks/<int:task_id>', methods=['PUT'])
+@jwt_required()
 def update_task(task_id):
-    task = Task.query.get_or_404(task_id)
+    current_user_id = get_jwt_identity()
+    task = Task.query.filter_by(id=task_id, user_id=current_user_id).first_or_404()
     data = request.json
     
     old_completed_status = task.completed
@@ -72,8 +82,10 @@ def update_task(task_id):
     return jsonify(task.to_dict())
 
 @api.route('/tasks/<int:task_id>', methods=['DELETE'])
+@jwt_required()
 def delete_task(task_id):
-    task = Task.query.get_or_404(task_id)
+    current_user_id = get_jwt_identity()
+    task = Task.query.filter_by(id=task_id, user_id=current_user_id).first_or_404()
     
     db.session.delete(task)
     db.session.commit()
@@ -81,10 +93,12 @@ def delete_task(task_id):
     return '', 204
 
 @api.route('/tasks/completed', methods=['DELETE'])
+@jwt_required()
 def delete_completed_tasks():
     """Delete all completed tasks."""
-    # Find all completed tasks
-    completed_tasks = Task.query.filter_by(completed=True).all()
+    current_user_id = get_jwt_identity()
+    # Find all completed tasks for the current user
+    completed_tasks = Task.query.filter_by(completed=True, user_id=current_user_id).all()
     
     # Delete each task
     for task in completed_tasks:
@@ -149,6 +163,7 @@ def create_next_recurring_task(task):
             completed=False,
             is_recurring=task.is_recurring,
             recurrence_type=task.recurrence_type,
-            parent_task_id=task.id
+            parent_task_id=task.id,
+            user_id=task.user_id
         )
         db.session.add(new_task)

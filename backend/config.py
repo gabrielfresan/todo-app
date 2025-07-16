@@ -19,3 +19,5 @@ class Config:
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     CORS_HEADERS = 'Content-Type'
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'jwt-secret-string'
+    JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hora

@@ -4,6 +4,15 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL + "/api",
 });
 
+// Interceptor para adicionar token nas requisições
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export const getTasks = async () => {
   const response = await api.get("/tasks");
   return response.data;
