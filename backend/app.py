@@ -20,7 +20,13 @@ def create_app(config_class=Config):
     jwt = JWTManager(app)
     
     # Configure CORS
-    CORS(app, origins=["http://localhost:5173", "https://todo.fresan.tech", "https://todo-api-production-165b.up.railway.app"])
+    CORS(app, origins=[
+        "http://localhost:5173",
+        "https://todo.fresan.tech",
+        "https://todo-app-three-nu-14.vercel.app",
+        "https://todo-app-git-main-gabrielfresans-projects.vercel.app",
+        "https://todo-2shekykln-gabrielfresans-projects.vercel.app"
+    ])
     
     # Register blueprints
     app.register_blueprint(api, url_prefix='/api')
