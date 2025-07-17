@@ -9,9 +9,11 @@ class Config:
     # Get the DATABASE_URL from environment variables or use SQLite as fallback
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     
-    # Handle Render style postgres:// URLs (if present)
+    # Handle Render style postgres:// URLs (if present) 
     if SQLALCHEMY_DATABASE_URI and SQLALCHEMY_DATABASE_URI.startswith('postgres://'):
-        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace('postgres://', 'postgresql://', 1)
+        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace('postgres://', 'postgresql+psycopg://', 1)
+    elif SQLALCHEMY_DATABASE_URI and SQLALCHEMY_DATABASE_URI.startswith('postgresql://'):
+        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace('postgresql://', 'postgresql+psycopg://', 1)
     
     # If no DATABASE_URL is provided, fallback to SQLite (for local development)
     if not SQLALCHEMY_DATABASE_URI:
