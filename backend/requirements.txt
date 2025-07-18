@@ -19,3 +19,4 @@ gunicorn==21.2.0
 psycopg[binary]==3.2.9
 bcrypt==4.0.1
 flask-jwt-extended==4.6.0
+resend==2.11.0

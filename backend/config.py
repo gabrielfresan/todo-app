@@ -23,3 +23,7 @@ class Config:
     CORS_HEADERS = 'Content-Type'
     JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'jwt-secret-string'
     JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hora
+    
+    # Resend configuration
+    RESEND_API_KEY = os.environ.get('RESEND_API_KEY') or 're_BzMVGWSs_5qETD2mVPmWuMmstaYLQ5TPj'
+    FROM_EMAIL = os.environ.get('FROM_EMAIL') or 'noreply@todo.fresan.tech'
