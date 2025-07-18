@@ -43,16 +43,28 @@ export default function Register() {
       
       const response = await registerApi(registerData);
       console.log('Resposta do registro:', response);
+      console.log('verification_sent value:', response.verification_sent);
+      console.log('Has access_token:', !!response.access_token);
       
-      setSuccess('Conta criada com sucesso! Redirecionando...');
-      
-      // Login automático após registro
-      login(response.user, response.access_token);
-      
-      // Redirecionar após 1 segundo
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
+      // Check if verification is required (no access_token means verification needed)
+      if (response.verification_sent || !response.access_token) {
+        setSuccess('Conta criada! Verifique seu email para continuar.');
+        
+        // Redirect to email verification page
+        setTimeout(() => {
+          navigate('/verify-email', { 
+            state: { email: registerData.email }
+          });
+        }, 1500);
+      } else {
+        // Old flow for backward compatibility
+        setSuccess('Conta criada com sucesso! Redirecionando...');
+        login(response.user, response.access_token);
+        
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      }
       
     } catch (err) {
       console.error('Erro no registro:', err);

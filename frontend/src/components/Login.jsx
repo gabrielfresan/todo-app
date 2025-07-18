@@ -39,7 +39,26 @@ export default function Login() {
     } catch (err) {
       console.error('Erro no login:', err);
       console.error('Resposta do erro:', err.response?.data);
-      setError(err.response?.data?.error || 'Erro ao fazer login');
+      
+      const errorMessage = err.response?.data?.error || 'Erro ao fazer login';
+      
+      // Check if it's an email verification error
+      if (errorMessage.includes('Email não verificado')) {
+        setError(
+          <span>
+            {errorMessage}{' '}
+            <Link 
+              to="/verify-email" 
+              state={{ email: formData.email }}
+              className="underline font-medium"
+            >
+              Clique aqui para verificar
+            </Link>
+          </span>
+        );
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }

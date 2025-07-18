@@ -22,3 +22,13 @@ export const getCurrentUser = async (token) => {
   });
   return response.data;
 };
+
+export const verifyEmail = async (email, code) => {
+  const response = await authApi.post("/verify-email", { email, code });
+  return response.data;
+};
+
+export const resendVerification = async (email) => {
+  const response = await authApi.post("/resend-verification", { email });
+  return response.data;
+};
