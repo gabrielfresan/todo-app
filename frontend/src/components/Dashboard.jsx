@@ -23,15 +23,19 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          <div className="lg:col-span-4">
-            <TaskList 
-              onTasksUpdate={handleTasksUpdate}
-            />
-          </div>
-          <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <Notifications tasks={tasks} />
+        <div className="flex justify-center">
+          <div className="w-full max-w-6xl">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+              <div className="lg:col-span-4">
+                <TaskList 
+                  onTasksUpdate={handleTasksUpdate}
+                />
+              </div>
+              <div className="lg:col-span-1">
+                <div className="sticky top-8">
+                  <Notifications tasks={tasks} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
