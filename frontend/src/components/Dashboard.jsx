@@ -13,8 +13,8 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
+      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Suas Tarefas
           </h2>
@@ -23,14 +23,16 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="lg:col-span-3">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          <div className="lg:col-span-4">
             <TaskList 
               onTasksUpdate={handleTasksUpdate}
             />
           </div>
           <div className="lg:col-span-1">
-            <Notifications tasks={tasks} />
+            <div className="sticky top-8">
+              <Notifications tasks={tasks} />
+            </div>
           </div>
         </div>
       </div>

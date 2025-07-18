@@ -262,7 +262,7 @@ const TaskList = ({ id, onTasksUpdate }) => {
   };
 
   return (
-    <div id={id} className="container mx-auto max-w-5xl p-4">
+    <div id={id} className="w-full max-w-none p-0">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Minhas Tarefas</h1>
 
@@ -327,17 +327,18 @@ const TaskList = ({ id, onTasksUpdate }) => {
       <div className="bg-white shadow-md rounded-lg p-6">
         {/* Filtros de data em layout responsivo */}
         <div className="mb-6">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 mb-4 max-w-4xl">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 mb-4">
           <button
             onClick={() => setActiveFilter("all")}
-            className={`flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
+            className={`flex items-center justify-center px-2 sm:px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
               activeFilter === "all"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarAlt className="mr-1.5 w-3 h-3" />
-            Todas
+            <FaCalendarAlt className="mr-1 sm:mr-1.5 w-3 h-3" />
+            <span className="hidden sm:inline">Todas</span>
+            <span className="sm:hidden">T</span>
             <span className="ml-1 bg-white bg-opacity-20 rounded-full px-1 py-0.5 text-xs leading-none min-w-[16px] text-center">
               {taskCounts.all}
             </span>
@@ -345,14 +346,15 @@ const TaskList = ({ id, onTasksUpdate }) => {
 
           <button
             onClick={() => setActiveFilter("today")}
-            className={`flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
+            className={`flex items-center justify-center px-2 sm:px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
               activeFilter === "today"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarDay className="mr-1.5 w-3 h-3" />
-            Hoje
+            <FaCalendarDay className="mr-1 sm:mr-1.5 w-3 h-3" />
+            <span className="hidden sm:inline">Hoje</span>
+            <span className="sm:hidden">H</span>
             <span className="ml-1 bg-white bg-opacity-20 rounded-full px-1 py-0.5 text-xs leading-none min-w-[16px] text-center">
               {taskCounts.today}
             </span>
@@ -360,14 +362,15 @@ const TaskList = ({ id, onTasksUpdate }) => {
 
           <button
             onClick={() => setActiveFilter("tomorrow")}
-            className={`flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
+            className={`flex items-center justify-center px-2 sm:px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
               activeFilter === "tomorrow"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarDay className="mr-1.5 w-3 h-3" />
-            Amanhã
+            <FaCalendarDay className="mr-1 sm:mr-1.5 w-3 h-3" />
+            <span className="hidden sm:inline">Amanhã</span>
+            <span className="sm:hidden">A</span>
             <span className="ml-1 bg-white bg-opacity-20 rounded-full px-1 py-0.5 text-xs leading-none min-w-[16px] text-center">
               {taskCounts.tomorrow}
             </span>
@@ -375,14 +378,15 @@ const TaskList = ({ id, onTasksUpdate }) => {
 
           <button
             onClick={() => setActiveFilter("future")}
-            className={`flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
+            className={`flex items-center justify-center px-2 sm:px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
               activeFilter === "future"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarWeek className="mr-1.5 w-3 h-3" />
-            Futuras
+            <FaCalendarWeek className="mr-1 sm:mr-1.5 w-3 h-3" />
+            <span className="hidden sm:inline">Futuras</span>
+            <span className="sm:hidden">F</span>
             <span className="ml-1 bg-white bg-opacity-20 rounded-full px-1 py-0.5 text-xs leading-none min-w-[16px] text-center">
               {taskCounts.future}
             </span>
@@ -390,14 +394,15 @@ const TaskList = ({ id, onTasksUpdate }) => {
 
           <button
             onClick={() => setActiveFilter("no-date")}
-            className={`flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
+            className={`flex items-center justify-center px-2 sm:px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
               activeFilter === "no-date"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaCalendarAlt className="mr-1" />
-            Sem data
+            <FaCalendarAlt className="mr-1 sm:mr-1.5" />
+            <span className="hidden sm:inline">Sem data</span>
+            <span className="sm:hidden">S</span>
             <span className="ml-1 bg-white bg-opacity-20 rounded-full px-1 py-0.5 text-xs leading-none min-w-[16px] text-center">
               {taskCounts["no-date"]}
             </span>
@@ -405,14 +410,15 @@ const TaskList = ({ id, onTasksUpdate }) => {
 
           <button
             onClick={() => setActiveFilter("recurring")}
-            className={`flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
+            className={`flex items-center justify-center px-2 sm:px-3 py-1.5 rounded-full text-xs font-medium transition-colors w-full ${
               activeFilter === "recurring"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
-            <FaRecycle className="mr-1.5 w-3 h-3" />
-            Recorrentes
+            <FaRecycle className="mr-1 sm:mr-1.5 w-3 h-3" />
+            <span className="hidden sm:inline">Recorrentes</span>
+            <span className="sm:hidden">R</span>
             <span className="ml-1 bg-white bg-opacity-20 rounded-full px-1 py-0.5 text-xs leading-none min-w-[16px] text-center">
               {taskCounts.recurring}
             </span>
