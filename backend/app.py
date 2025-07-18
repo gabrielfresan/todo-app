@@ -32,13 +32,11 @@ def create_app(config_class=Config):
     app.register_blueprint(api, url_prefix='/api')
     app.register_blueprint(auth, url_prefix='/api/auth')
     
-    # Create database tables
+    # Create database tables if they don't exist
     with app.app_context():
-        # Drop all tables and recreate (for development)
-        print("Criando tabelas do banco de dados...")
-        db.drop_all()
+        print("Verificando/criando tabelas do banco de dados...")
         db.create_all()
-        print("Tabelas criadas com sucesso!")
+        print("Tabelas prontas!")
     
     @app.route('/')
     def hello():
