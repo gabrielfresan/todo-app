@@ -18,10 +18,11 @@ const Notifications = ({ tasks, onTaskClick }) => {
     }
   }, [tasks]);
 
-  // Configurar notificações do navegador (apenas uma vez)
+  // Configurar notificações do navegador
   useEffect(() => {
-    // IDs de tarefas que já foram notificadas
-    let notifiedTaskIds = new Set();
+    // IDs de tarefas que já foram notificadas (mantém entre re-renders)
+    const notifiedTaskIds = JSON.parse(localStorage.getItem('notifiedTaskIds') || '[]');
+    const notifiedSet = new Set(notifiedTaskIds);
 
     // Verificar tarefas vencidas e enviar notificações
     const checkAndNotify = () => {
@@ -29,8 +30,8 @@ const Notifications = ({ tasks, onTaskClick }) => {
 
       if (Notification.permission === "granted") {
         currentDueTasks.forEach((task) => {
-          // Só notifica para tarefas que ainda não foram notificadas
-          if (!notifiedTaskIds.has(task.id)) {
+          // Só notifica para tarefas que ainda não foram notificadas e não estão concluídas
+          if (!notifiedSet.has(task.id) && !task.completed) {
             try {
               const notification = new Notification("Tarefa Vencida", {
                 body: `A tarefa "${task.title}" está vencida!`,
@@ -38,7 +39,8 @@ const Notifications = ({ tasks, onTaskClick }) => {
               });
 
               // Adiciona o ID da tarefa ao conjunto de tarefas notificadas
-              notifiedTaskIds.add(task.id);
+              notifiedSet.add(task.id);
+              localStorage.setItem('notifiedTaskIds', JSON.stringify([...notifiedSet]));
 
               // Quando o usuário clica na notificação, abre o app e foca na tarefa
               notification.onclick = () => {
@@ -53,6 +55,14 @@ const Notifications = ({ tasks, onTaskClick }) => {
           }
         });
       }
+
+      // Remove IDs de tarefas concluídas da lista de notificadas
+      tasks.forEach((task) => {
+        if (task.completed && notifiedSet.has(task.id)) {
+          notifiedSet.delete(task.id);
+          localStorage.setItem('notifiedTaskIds', JSON.stringify([...notifiedSet]));
+        }
+      });
     };
 
     // Verificar a cada minuto
@@ -62,7 +72,7 @@ const Notifications = ({ tasks, onTaskClick }) => {
     setTimeout(checkAndNotify, 1000);
 
     return () => clearInterval(intervalId);
-  }, []); // Run only once
+  }, [tasks, onTaskClick]); // Atualiza quando tasks mudam
 
   // Handle permission request on user interaction
   const handleRequestPermission = async () => {
