@@ -63,14 +63,35 @@ def create_app(config_class=Config):
                 db.session.commit()
                 print("✅ email_verified column added")
             
-            # Remove any foreign key constraints on verification_code table if they exist
+            # Remove any foreign key constraints and fix table naming issues
             try:
-                # Try to drop the constraint if it exists (PostgreSQL)
+                # Check if there's an unwanted email_verification table (should be verification_code)
+                tables_result = db.session.execute(text("""
+                    SELECT table_name FROM information_schema.tables 
+                    WHERE table_schema = 'public' AND table_name IN ('email_verification', 'verification_code')
+                """)).fetchall()
+                
+                existing_tables = [row[0] for row in tables_result]
+                print(f"📋 Found tables: {existing_tables}")
+                
+                # If email_verification table exists, drop its constraints and the table
+                if 'email_verification' in existing_tables:
+                    print("🗑️ Dropping email_verification table...")
+                    db.session.execute(text("DROP TABLE IF EXISTS email_verification CASCADE"))
+                
+                # Drop any constraints on verification_code table
                 db.session.execute(text("ALTER TABLE verification_code DROP CONSTRAINT IF EXISTS email_verification_user_id_fkey"))
+                db.session.execute(text("ALTER TABLE verification_code DROP CONSTRAINT IF EXISTS verification_code_user_id_fkey"))
+                
                 db.session.commit()
-                print("✅ Removed foreign key constraint if it existed")
-            except:
-                pass  # Constraint might not exist or we're on SQLite
+                print("✅ Cleaned up foreign key constraints and unwanted tables")
+                
+            except Exception as e:
+                print(f"ℹ️ Constraint cleanup: {e}")
+                try:
+                    db.session.rollback()
+                except:
+                    pass
             
             # Set existing users as verified
             result = db.session.execute(text("UPDATE \"user\" SET email_verified = TRUE WHERE email_verified IS NULL"))
