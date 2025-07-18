@@ -2,9 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { login as loginApi } from '../services/auth';
-import todoLogo from '../assets/todo-logo.png';
 
-export default function Login() {
+export default function LoginSimple() {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -33,21 +32,11 @@ export default function Login() {
       console.log('Resposta do login:', response);
       
       login(response.user, response.access_token);
-      
-      // Redirecionar após login bem-sucedido
       navigate('/');
     } catch (err) {
       console.error('Erro no login:', err);
-      console.error('Resposta do erro:', err.response?.data);
-      
       const errorMessage = err.response?.data?.error || 'Erro ao fazer login';
-      
-      // Check if it's an email verification error
-      if (errorMessage.includes('Email não verificado')) {
-        setError(errorMessage + ' - Acesse /verify-email para verificar');
-      } else {
-        setError(errorMessage);
-      }
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -57,11 +46,7 @@ export default function Login() {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <img
-            className="h-20 w-auto"
-            src={todoLogo}
-            alt="Todo App"
-          />
+          <h1 className="text-4xl font-bold text-blue-600">Todo App</h1>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Entre na sua conta
