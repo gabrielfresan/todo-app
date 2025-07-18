@@ -32,11 +32,12 @@ def cleanup_unverified_user(email, delay=60):
                 user = User.query.filter_by(email=email, email_verified=False).first()
                 if user:
                     print(f"Removendo usuário não verificado: {email}")
-                    db.session.delete(user)
-                    # Also clean up any verification codes
+                    # Clean up verification codes FIRST
                     codes = VerificationCode.query.filter_by(email=email).all()
                     for code in codes:
                         db.session.delete(code)
+                    # Then delete user
+                    db.session.delete(user)
                     db.session.commit()
                 else:
                     print(f"Usuário {email} já foi verificado ou removido")
@@ -76,12 +77,12 @@ def register():
             if existing_user.email_verified:
                 return jsonify({'error': 'Email já está em uso'}), 409
             else:
-                # Remove unverified user and start fresh
-                db.session.delete(existing_user)
-                # Clean up old verification codes
+                # Clean up old verification codes FIRST (before deleting user)
                 old_codes = VerificationCode.query.filter_by(email=email).all()
                 for code in old_codes:
                     db.session.delete(code)
+                # Now remove unverified user
+                db.session.delete(existing_user)
                 db.session.commit()
         
         # Create new user (unverified)
@@ -108,9 +109,9 @@ def register():
         success, response = email_service.send_verification_email(email, verification_code)
         
         if not success:
-            # If email fails, clean up
-            db.session.delete(user)
+            # If email fails, clean up (codes first, then user)
             db.session.delete(code_record)
+            db.session.delete(user)
             db.session.commit()
             return jsonify({'error': f'Erro ao enviar email de verificação: {response}'}), 500
         

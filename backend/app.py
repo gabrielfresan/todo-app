@@ -63,6 +63,15 @@ def create_app(config_class=Config):
                 db.session.commit()
                 print("✅ email_verified column added")
             
+            # Remove any foreign key constraints on verification_code table if they exist
+            try:
+                # Try to drop the constraint if it exists (PostgreSQL)
+                db.session.execute(text("ALTER TABLE verification_code DROP CONSTRAINT IF EXISTS email_verification_user_id_fkey"))
+                db.session.commit()
+                print("✅ Removed foreign key constraint if it existed")
+            except:
+                pass  # Constraint might not exist or we're on SQLite
+            
             # Set existing users as verified
             result = db.session.execute(text("UPDATE \"user\" SET email_verified = TRUE WHERE email_verified IS NULL"))
             if result.rowcount > 0:
