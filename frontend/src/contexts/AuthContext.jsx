@@ -12,27 +12,47 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Verificar se há token no localStorage
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+    try {
+      const storedToken = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+      
+      if (storedToken && storedUser && storedUser !== 'undefined') {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser && typeof parsedUser === 'object') {
+          setToken(storedToken);
+          setUser(parsedUser);
+        } else {
+          // Clear invalid data
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+        }
+      }
+    } catch (error) {
+      console.error('Error parsing localStorage data:', error);
+      // Clear corrupted data
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
     }
     
     setIsLoading(false);
   }, []);
 
   const login = (userData, accessToken) => {
-    localStorage.setItem('token', accessToken);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setToken(accessToken);
-    setUser(userData);
+    try {
+      if (userData && accessToken) {
+        localStorage.setItem('token', accessToken);
+        localStorage.setItem('user', JSON.stringify(userData));
+        setToken(accessToken);
+        setUser(userData);
+      }
+    } catch (error) {
+      console.error('Error saving login data:', error);
+    }
   };
 
   const logout = () => {
